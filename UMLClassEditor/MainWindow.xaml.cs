@@ -23,7 +23,7 @@ namespace UMLClassEditor
         public MainWindow()
         {
             InitializeComponent();
-            
+            //ООО
         }
     }
 }

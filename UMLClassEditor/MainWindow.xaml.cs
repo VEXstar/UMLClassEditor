@@ -42,7 +42,7 @@ namespace UMLClassEditor {
         private void Canvas_MouseUp(object sender, MouseButtonEventArgs e) {
             point2.X = e.GetPosition((Canvas)sender).X;
             point2.Y = e.GetPosition((Canvas)sender).Y;
-            switch (state) {
+            switch (state) { // БОЛЬШОЙ КЕЙС
                 case Mode.AssotiationArrow:
                     SimpleLine line = new SimpleLine(point1, point2);
                     AssociationTip tip = new AssociationTip(point2, -10, 10, -10, -10); // в зависимости от нужного поворота принимаются разные параметры

@@ -38,22 +38,10 @@ namespace UMLClassEditor.DrawElements.Blocks
 
         }
 
-        public override void draw()
+        public override void draw(Canvas canvas)
         {
-            Border border = new Border();
-            Grid grid = new Grid();
-            border.BorderThickness = new Thickness(1);
-            border.BorderBrush = Brushes.Black;
-            
-            border.Child = grid;
-            grid.Margin = new Thickness(0);
-            grid.Children.Add(className);
-            grid.Children.Add(new Separator());
-            foreach (var textBox in fields)
-            {
-                grid.Children.Add(textBox);
-            }
-
+            canvas.Children.Remove(element);
+            canvas.Children.Add(element);
         }
 
         public UIElement getGraph()

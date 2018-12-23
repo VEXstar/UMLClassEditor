@@ -13,20 +13,22 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace UMLClassEditor
-{
+namespace UMLClassEditor {
     /// <summary>
     /// Логика взаимодействия для MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
-    {
+    public partial class MainWindow : Window {
+        public enum Mode {
+            Nothing, Box, EditBox, AssotiationArrow
+        }
+
+        Mode state = new Mode();
         Point point1 = new Point(0, 0);
         Point point2 = new Point(0, 0);
 
-        public MainWindow()
-        {
+        public MainWindow() {
             InitializeComponent();
-            
+            state = Mode.AssotiationArrow;
         }
 
         private void Canvas_MouseDown(object sender, MouseButtonEventArgs e) {
@@ -37,8 +39,6 @@ namespace UMLClassEditor
         private void Canvas_MouseUp(object sender, MouseButtonEventArgs e) {
             point2.X = e.GetPosition((Canvas)sender).X;
             point2.Y = e.GetPosition((Canvas)sender).Y;
-            AssociationArrow arrow = new AssociationArrow(point1, point2);
-            MainCanvas.Children.Add(arrow.GetPolyline());
         }
     }
 }

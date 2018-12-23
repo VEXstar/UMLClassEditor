@@ -62,8 +62,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DrawElements\Lines\Arrows.cs" />
-    <Compile Include="DrawElements\Lines\AssociationArrow.cs" />
+    <Compile Include="DrawElements\Lines\SimpleLine.cs" />
     <Compile Include="DrawElements\Blocks\UMLClassBox.cs" />
     <Compile Include="DrawElements\UMLElement.cs" />
     <Compile Include="MainWindow.xaml.cs">

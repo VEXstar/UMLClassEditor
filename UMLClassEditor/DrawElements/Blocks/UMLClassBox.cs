@@ -1,7 +1,9 @@
-﻿namespace UMLClassEditor.DrawElements.Blocks
+﻿using System.Windows.Controls;
+
+namespace UMLClassEditor.DrawElements.Blocks
 {
     public class UMLClassBox : UMLElement {
-        public override void draw() {
+        public override void draw(Canvas canvas) {
             throw new System.NotImplementedException();
         }
 

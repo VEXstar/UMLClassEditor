@@ -28,6 +28,7 @@ namespace UMLClassEditor.DrawElements.Tips {
             pointCollection.Add(Tip1);
             polyline.Points = pointCollection;
             polyline.Stroke = Brushes.Black;
+            polyline.Fill = Brushes.White;
         }
 
         public Polyline GetPolyline() {

@@ -63,6 +63,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DrawElements\Arrows\Arrow.cs" />
+    <Compile Include="DrawElements\Lines\DottedLine.cs" />
     <Compile Include="DrawElements\Lines\SimpleLine.cs" />
     <Compile Include="DrawElements\Blocks\UMLClassBox.cs" />
     <Compile Include="DrawElements\Tips\AggregationTip.cs" />

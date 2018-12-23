@@ -31,7 +31,7 @@ namespace UMLClassEditor {
 
         public MainWindow() {
             InitializeComponent();
-            state = Mode.AggregationArrow;
+            state = Mode.ImplementationArrow;
         }
 
         private void Canvas_MouseDown(object sender, MouseButtonEventArgs e) {
@@ -60,6 +60,12 @@ namespace UMLClassEditor {
                     AggregateTip tip2 = new AggregateTip(point2, -10, 10, -10, -10); // в зависимости от нужного поворота принимаются разные параметры
                     Arrow arrow2 = new Arrow(line2.GetPolyline(), tip2.GetPolyline());
                     arrow2.draw(MainCanvas);
+                    break;
+                case Mode.ImplementationArrow:
+                    DottedLine line3 = new DottedLine(point1, point2);
+                    DerivTip tip3 = new DerivTip(point2, -10, 10, -10, -10); // в зависимости от нужного поворота принимаются разные параметры
+                    Arrow arrow3 = new Arrow(line3.GetPolyline(), tip3.GetPolyline());
+                    arrow3.draw(MainCanvas);
                     break;
             }
         }

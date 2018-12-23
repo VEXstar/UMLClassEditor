@@ -25,7 +25,7 @@ namespace UMLClassEditor.DrawElements.Blocks
         public override void draw()
         {
             Border border = new Border();
-            border
+            
             
         }
     }

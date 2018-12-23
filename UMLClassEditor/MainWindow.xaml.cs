@@ -24,6 +24,7 @@ namespace UMLClassEditor
         {
             InitializeComponent();
             //AAAAAAAAAAAAAAAAAAAAAA
+            //АААААААААААААААА
         }
     }
 }

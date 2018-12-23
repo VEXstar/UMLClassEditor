@@ -185,13 +185,6 @@ namespace UMLClassEditor.DrawElements.Blocks
 
         public override void move(int dx, int dy)
         {
-            //Matrix matrix = new Matrix();
-            //matrix.Translate(dx, dy);
-            //MatrixTransform transform = new MatrixTransform();
-            //transform.Matrix = matrix;
-
-            //element.RenderTransform = transform;
-            //element.LayoutTransform = Transform.Identity;
 
             Canvas.SetTop(element, Canvas.GetTop(element) + dy);
             Canvas.SetLeft(element, Canvas.GetLeft(element) + dx);

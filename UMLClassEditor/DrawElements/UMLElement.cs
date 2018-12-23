@@ -1,7 +1,8 @@
 ﻿namespace UMLClassEditor.DrawElements
 {
-    public class UMLElement
+    public abstract class UMLElement
     {
-        
+        public void draw() { }
+        public void move(int dx, int dy) { }
     }
 }

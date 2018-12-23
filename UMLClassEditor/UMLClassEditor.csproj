@@ -62,9 +62,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DrawElements\Arrows\AssotiationArrow.cs" />
     <Compile Include="DrawElements\Lines\SimpleLine.cs" />
     <Compile Include="DrawElements\Blocks\UMLClassBox.cs" />
-    <Compile Include="DrawElements\Lines\AssociationTip.cs" />
+    <Compile Include="DrawElements\Tips\AssotiationTip.cs" />
     <Compile Include="DrawElements\UMLElement.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -97,8 +98,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DrawElements\Tips\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

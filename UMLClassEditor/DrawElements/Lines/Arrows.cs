@@ -7,6 +7,6 @@ using UMLClassEditor.DrawElements;
 
 namespace UMLClassEditor {
     abstract public class Arrows : UMLElement {
-        //
+        
     }
 }

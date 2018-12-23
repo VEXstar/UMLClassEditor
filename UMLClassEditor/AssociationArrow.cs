@@ -12,7 +12,7 @@ namespace UMLClassEditor {
 
         public AssociationArrow(Point startPoint, Point endPoint) {
             path = new Polyline();
-            
+            //
         }
     }
 }

@@ -20,10 +20,25 @@ namespace UMLClassEditor
     /// </summary>
     public partial class MainWindow : Window
     {
+        Point point1 = new Point(0, 0);
+        Point point2 = new Point(0, 0);
+
         public MainWindow()
         {
             InitializeComponent();
-            //ООО
+            
+        }
+
+        private void Canvas_MouseDown(object sender, MouseButtonEventArgs e) {
+            point1.X = e.GetPosition((Canvas)sender).X;
+            point1.Y = e.GetPosition((Canvas)sender).Y;
+        }
+
+        private void Canvas_MouseUp(object sender, MouseButtonEventArgs e) {
+            point2.X = e.GetPosition((Canvas)sender).X;
+            point2.Y = e.GetPosition((Canvas)sender).Y;
+            AssociationArrow arrow = new AssociationArrow(point1, point2);
+            MainCanvas.Children.Add(arrow.GetPolyline());
         }
     }
 }

@@ -21,8 +21,11 @@
                 <MenuItem Header="Сохранить"></MenuItem>
             </MenuItem>
         </Menu>
-        <Canvas Margin="100,18,0,0">
-           <Border   Height="101" Width="119">
+        <Canvas Margin="100,18,0,0" MouseDown="Canvas_MouseDown" MouseUp="Canvas_MouseUp" Name="MainCanvas">
+            <Canvas.Background>
+                <SolidColorBrush Color="White" Opacity="0"/>
+            </Canvas.Background>
+            <Border   Height="101" Width="119">
                <Grid Height="100" Canvas.Left="204" Canvas.Top="123" Width="100">
 
                </Grid>

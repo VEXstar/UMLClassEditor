@@ -7,6 +7,15 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        
+        <Menu Height="18" VerticalAlignment="Top">
+            <MenuItem Header="Файл">
+                <MenuItem Header="Открыть"></MenuItem>
+                <MenuItem Header="Сохранить"></MenuItem>
+            </MenuItem>
+        </Menu>
+        <Canvas Margin="100,18,0,0"/>
+        <Grid HorizontalAlignment="Left" Margin="0,18,0,0" Width="100" Background="#FFF1C0C0"/>
+
+
     </Grid>
 </Window>

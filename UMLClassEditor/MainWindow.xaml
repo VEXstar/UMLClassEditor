@@ -30,6 +30,5 @@
         </Canvas>
         <Grid HorizontalAlignment="Left" Margin="0,18,0,0" Width="100" Background="#FFF1C0C0"/>
 
-
     </Grid>
 </Window>

@@ -21,7 +21,13 @@
                 <MenuItem Header="Сохранить"></MenuItem>
             </MenuItem>
         </Menu>
-        <Canvas Margin="100,18,0,0"/>
+        <Canvas Margin="100,18,0,0">
+           <Border   Height="101" Width="119">
+               <Grid Height="100" Canvas.Left="204" Canvas.Top="123" Width="100">
+
+               </Grid>
+            </Border>
+        </Canvas>
         <Grid HorizontalAlignment="Left" Margin="0,18,0,0" Width="100" Background="#FFF1C0C0"/>
 
 

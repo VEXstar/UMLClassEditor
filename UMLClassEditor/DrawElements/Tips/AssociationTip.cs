@@ -16,10 +16,10 @@ namespace UMLClassEditor.DrawElements.Lines
         Point TipEnd;
         Polyline polyline = new Polyline(); // отрисовываемый элемент управления
         PointCollection pointCollection = new PointCollection(); // точки по которым будем строить стрелку
-        public AssociationTip(int pointForEndX, int pointForEndY, int ForX, int ForY) {
+        public AssociationTip(int pointForEndX, int pointForEndY, int ForX1, int ForX2, int ForY1, int ForY2) {
             TipEnd = new Point(pointForEndX, pointForEndY);
-            Tip1 = new Point(pointForEndX, pointForEndY);
-            Tip2 = new Point(pointForEndX, pointForEndY);
+            Tip1 = new Point(pointForEndX+ ForX1, pointForEndY+ForY1);
+            Tip2 = new Point(pointForEndX+ForX2, pointForEndY+ ForY2);
             pointCollection.Add(Tip1);
             pointCollection.Add(TipEnd);
             pointCollection.Add(Tip2);

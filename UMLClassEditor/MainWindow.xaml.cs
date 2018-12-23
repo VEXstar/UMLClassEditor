@@ -12,48 +12,62 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using UMLClassEditor.DrawElements.Blocks;
+using UMLClassEditor.DrawElements.Arrows;
+using UMLClassEditor.DrawElements.Lines;
+using UMLClassEditor.DrawElements.Tips;
 
-namespace UMLClassEditor
-{
+namespace UMLClassEditor {
     /// <summary>
     /// Логика взаимодействия для MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
-    {
-        public MainWindow()
-        {
+    public partial class MainWindow : Window {
+        public enum Mode {
+            Nothing, Box, EditBox, AssotiationArrow, DerivArrow, ImplementationArrow, DependenceArrow, AggregationArrow, CompositionArrow
+        }
+
+        Mode state = new Mode();
+        Point point1 = new Point(0, 0);
+        Point point2 = new Point(0, 0);
+
+        public MainWindow() {
             InitializeComponent();
-            this.Loaded += LoadedForm;
+            state = Mode.ImplementationArrow;
         }
 
-        private UMLClassBox box;
-        private void LoadedForm(object sender, RoutedEventArgs e)
-        {
-            box = new UMLClassBox(UMLClassBox.TYPE_CLASS,"SUKA");
-            drawPanel.Children.Add(box.getGraph());
-            
-            this.PreviewMouseMove += DrawPanelOnMouseMove;
+        private void Canvas_MouseDown(object sender, MouseButtonEventArgs e) {
+            point1.X = e.GetPosition((Canvas)sender).X;
+            point1.Y = e.GetPosition((Canvas)sender).Y;
         }
 
-        private Point last = new Point(-1,-1);
-        private void DrawPanelOnMouseMove(object sender, MouseEventArgs e)
-        {
-            Point now = e.GetPosition(drawPanel);
-            if (last.X==-1)
-            {
-                last = new Point(now.X, now.Y); ;
-                return;
+        private void Canvas_MouseUp(object sender, MouseButtonEventArgs e) {
+            point2.X = e.GetPosition((Canvas)sender).X;
+            point2.Y = e.GetPosition((Canvas)sender).Y;
+            switch (state) {
+                case Mode.AssotiationArrow:
+                    SimpleLine line = new SimpleLine(point1, point2);
+                    AssociationTip tip = new AssociationTip(point2, -10, 10, -10, -10); // в зависимости от нужного поворота принимаются разные параметры
+                    Arrow arrow = new Arrow(line.GetPolyline(), tip.GetPolyline());
+                    arrow.draw(MainCanvas);
+                    break;
+                case Mode.DerivArrow:
+                    SimpleLine line1 = new SimpleLine(point1, point2);
+                    DerivTip tip1 = new DerivTip(point2, -10, 10, -10, -10); // в зависимости от нужного поворота принимаются разные параметры
+                    Arrow arrow1 = new Arrow(line1.GetPolyline(), tip1.GetPolyline());
+                    arrow1.draw(MainCanvas);
+                    break;
+                case Mode.AggregationArrow:
+                    SimpleLine line2 = new SimpleLine(point1, point2);
+                    AggregateTip tip2 = new AggregateTip(point2, -10, 10, -10, -10); // в зависимости от нужного поворота принимаются разные параметры
+                    Arrow arrow2 = new Arrow(line2.GetPolyline(), tip2.GetPolyline());
+                    arrow2.draw(MainCanvas);
+                    break;
+                case Mode.ImplementationArrow:
+                    DottedLine line3 = new DottedLine(point1, point2);
+                    DerivTip tip3 = new DerivTip(point2, -10, 10, -10, -10); // в зависимости от нужного поворота принимаются разные параметры
+                    Arrow arrow3 = new Arrow(line3.GetPolyline(), tip3.GetPolyline());
+                    arrow3.draw(MainCanvas);
+                    break;
             }
-
-            if (e.LeftButton == MouseButtonState.Pressed)
-            {
-                box.move((int)(now.X - last.X), (int)(now.Y - last.Y));
-            }
-
-            last  = new Point(now.X,now.Y);
-
-
         }
     }
 }

@@ -2,7 +2,7 @@
 {
     public abstract class UMLElement
     {
-        public void draw() { }
-        public void move(int dx, int dy) { }
+        public abstract void draw();
+        public abstract void move(int dx, int dy);
     }
 }

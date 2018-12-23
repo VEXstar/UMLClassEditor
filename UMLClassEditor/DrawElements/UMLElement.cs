@@ -1,7 +1,7 @@
 ﻿namespace UMLClassEditor.DrawElements
 {
-    public class UMLElement
+    public abstract class UMLElement
     {
-        
+        public abstract void draw();
     }
 }

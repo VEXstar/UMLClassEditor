@@ -21,15 +21,7 @@
                 <MenuItem Header="Сохранить"></MenuItem>
             </MenuItem>
         </Menu>
-        <Canvas Margin="100,18,0,0">
-            <Border BorderBrush="Black" BorderThickness="1"  Height="79" Width="119" Canvas.Left="119" Canvas.Top="54">
-                <Grid Height="100" Margin="0">
-                    <Label Content="ХУЙ" Height="18" VerticalAlignment="Top" FontSize="6"/>
-                    <TextBox Height="12" Margin="0,22,0,0" TextWrapping="Wrap" Text="+SUKA()" VerticalAlignment="Top" BorderBrush="{x:Null}" FontSize="6"/>
-                    <Separator Height="5" Margin="0,18,0,0" VerticalAlignment="Top" Background="Black"/>
-                    <Separator Height="5" Margin="0,34,0,0" VerticalAlignment="Top" Background="Black"/>
-                </Grid>
-            </Border>
+        <Canvas Margin="100,18,0,0" Name="drawPanel">
         </Canvas>
         <Grid HorizontalAlignment="Left" Margin="0,18,0,0" Width="100" Background="#FFF1C0C0"/>
 

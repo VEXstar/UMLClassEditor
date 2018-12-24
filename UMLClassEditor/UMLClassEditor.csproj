@@ -69,6 +69,8 @@
     <Compile Include="DrawElements\Tips\AssotiationTip.cs" />
     <Compile Include="DrawElements\Tips\DerivTip.cs" />
     <Compile Include="DrawElements\UMLElement.cs" />
+    <Compile Include="Interfaces\IObservable.cs" />
+    <Compile Include="Interfaces\IObserver.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

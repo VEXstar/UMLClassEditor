@@ -30,6 +30,7 @@ namespace UMLClassEditor {
         public MainWindow() {
             InitializeComponent();
             drawCanvas.PreviewMouseMove += DrawCanvasOnPreviewMouseMove;
+            
         }
 
         private void DrawCanvasOnPreviewMouseMove(object sender, MouseEventArgs e) {

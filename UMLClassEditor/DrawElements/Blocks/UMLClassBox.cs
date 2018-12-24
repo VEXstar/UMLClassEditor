@@ -5,11 +5,13 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using Microsoft.Win32;
+using UMLClassEditor.Interfaces;
 
 namespace UMLClassEditor.DrawElements.Blocks
 {
-    public class UMLClassBox:UMLElement
+    public class UMLClassBox:UMLElement,IObservable
     {
+       
         private int  type;
         private TextBox className;
         private List<TextBox> fields  = new List<TextBox>();
@@ -42,6 +44,7 @@ namespace UMLClassEditor.DrawElements.Blocks
         {
             canvas.Children.Remove(element);
             canvas.Children.Add(element);
+            
         }
 
         public UIElement getGraph()
@@ -188,6 +191,25 @@ namespace UMLClassEditor.DrawElements.Blocks
 
             Canvas.SetTop(element, Canvas.GetTop(element) + dy);
             Canvas.SetLeft(element, Canvas.GetLeft(element) + dx);
+            NotifyAll(new int[]{dx,dy});
+        }
+        List<IObserver> observers = new List<IObserver>();
+        public void addObserver(IObserver observer)
+        {
+           observers.Add(observer);
+        }
+
+        public void removeObserver(IObserver observer)
+        {
+            observers.Remove(observer);
+        }
+
+        public void NotifyAll(object e)
+        {
+            foreach (var observer in observers)
+            {
+               observer.onEvent(e);
+            }
         }
     }
 }

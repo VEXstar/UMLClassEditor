@@ -35,7 +35,7 @@ namespace UMLClassEditor {
 
         private void DrawCanvasOnPreviewMouseMove(object sender, MouseEventArgs e)
         {
-
+            //ss
         }
 
         private void Canvas_MouseDown(object sender, MouseButtonEventArgs e) {

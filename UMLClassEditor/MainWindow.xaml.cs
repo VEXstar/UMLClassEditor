@@ -14,7 +14,7 @@ namespace UMLClassEditor {
     public partial class MainWindow : Window {
         public enum State {
             Editing, ClassBox, InterfaceBox, AssotiationArrow, DerivArrow, ImplementationArrow, DependenceArrow, AggregationArrow, CompositionArrow
-                
+                //
         }
 
         private State picked;

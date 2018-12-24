@@ -8,9 +8,9 @@ namespace UMLClassEditor {
     /// Логика взаимодействия для MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window {
-        public enum Mode {
-            Nothing, Box, EditBox, AssotiationArrow, DerivArrow, ImplementationArrow, DependenceArrow, AggregationArrow, CompositionArrow
-            
+        public enum State {
+            Editing, ClassBox, InterfaceBox, AssotiationArrow, DerivArrow, ImplementationArrow, DependenceArrow, AggregationArrow, CompositionArrow
+                //
         }
 
         List<UMLElement> elements = new List<UMLElement>();
@@ -20,8 +20,7 @@ namespace UMLClassEditor {
             
         }
 
-        private void DrawCanvasOnPreviewMouseMove(object sender, MouseEventArgs e)
-        {
+        private void DrawCanvasOnPreviewMouseMove(object sender, MouseEventArgs e) {
             //ss
         }
 

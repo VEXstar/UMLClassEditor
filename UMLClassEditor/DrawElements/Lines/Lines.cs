@@ -7,20 +7,22 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
-namespace UMLClassEditor {
-    class DottedLine {
+namespace UMLClassEditor.DrawElements.Lines {
+    class Lines {
         Polyline polyline = new Polyline();
         PointCollection pointCollection = new PointCollection();
 
-        public DottedLine(Point startPoint, Point endPoint) {
+        public Lines(Point startPoint, Point endPoint, char symbol) {
             pointCollection.Add(startPoint);
             pointCollection.Add(endPoint);
             polyline.Points = pointCollection;
             polyline.Stroke = Brushes.Black;
-            polyline.StrokeThickness = 1;
-            DoubleCollection coll = new DoubleCollection();
-            coll.Add(2);
-            polyline.StrokeDashArray = coll;
+            if (symbol == 'd') {
+                polyline.StrokeThickness = 1;
+                DoubleCollection coll = new DoubleCollection();
+                coll.Add(2);
+                polyline.StrokeDashArray = coll;
+            }
         }
 
         public Polyline GetPolyline() {

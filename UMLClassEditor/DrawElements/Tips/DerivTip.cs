@@ -15,7 +15,25 @@ namespace UMLClassEditor.DrawElements.Tips {
         Polyline polyline = new Polyline();
         PointCollection pointCollection = new PointCollection();
 
-        public DerivTip(Point point2, int ForX1, int ForX2, int ForY1, int ForY2) {
+        public DerivTip(Point point2, char symbol) {
+            int ForX1 = 10;
+            int ForY1 = 10;
+            int ForX2 = 10;
+            int ForY2 = 10;
+            switch (symbol) {
+                case 'L':
+
+                    break;
+                case 'R':
+
+                    break;
+                case 'U':
+
+                    break;
+                case 'D':
+
+                    break;
+            }
             TipEnd = point2;
             Tip1 = new Point(point2.X + ForX1, point2.Y + ForY1);
             Tip2 = new Point(point2.X + ForX2, point2.Y + ForY2);

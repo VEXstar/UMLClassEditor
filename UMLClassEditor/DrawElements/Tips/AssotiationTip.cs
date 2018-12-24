@@ -12,32 +12,25 @@ namespace UMLClassEditor.DrawElements.Lines {
         Point Tip1;
         Point Tip2;
         Point TipEnd;
-        Polyline polyline = new Polyline(); 
-        PointCollection pointCollection = new PointCollection(); 
+        Polyline polyline = new Polyline();
+        Point TipTale;
+        PointCollection pointCollection = new PointCollection();
 
-        public AssociationTip(Point point2, char symbol) {
-            int ForX1 = 10;
-            int ForY1 = 10;
-            int ForX2 = 10;
-            int ForY2 = 10;
-            switch (symbol) {
-                case 'L':
-
-                    break;
-                case 'R':
-
-                    break;
-                case 'U':
-
-                    break;
-                case 'D':
-
-                    break;
-            }
+        public AssociationTip(Point point2, string str) {
             TipEnd = point2;
-            Tip1 = new Point(point2.X + ForX1, point2.Y + ForY1);
-            Tip2 = new Point(point2.X + ForX2, point2.Y + ForY2);
+            if (str == "TipToRight") {
+                Tip1 = new Point(point2.X + 10, point2.Y - 10);
+                Tip2 = new Point(point2.X + 10, point2.Y + 10);
+                TipTale = new Point(TipEnd.X + 20, TipEnd.Y);
+            }
+            else {
+                Tip1 = new Point(point2.X - 10, point2.Y - 10);
+                Tip2 = new Point(point2.X - 10, point2.Y + 10);
+                TipTale = new Point(TipEnd.X - 20, TipEnd.Y);
+            }
             pointCollection.Add(Tip1);
+            pointCollection.Add(TipEnd);
+            pointCollection.Add(TipTale);
             pointCollection.Add(TipEnd);
             pointCollection.Add(Tip2);
             polyline.Points = pointCollection;
@@ -46,6 +39,10 @@ namespace UMLClassEditor.DrawElements.Lines {
 
         public Polyline GetPolyline() {
             return polyline;
+        }
+
+        public Point GetEndPointForLine() {
+            return TipTale;
         }
     }
 }

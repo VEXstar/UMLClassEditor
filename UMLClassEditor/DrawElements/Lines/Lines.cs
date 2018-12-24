@@ -12,12 +12,12 @@ namespace UMLClassEditor.DrawElements.Lines {
         Polyline polyline = new Polyline();
         PointCollection pointCollection = new PointCollection();
 
-        public Lines(Point startPoint, Point endPoint, char symbol) {
+        public Lines(Point startPoint, Point endPoint, string str) {
             pointCollection.Add(startPoint);
             pointCollection.Add(endPoint);
             polyline.Points = pointCollection;
             polyline.Stroke = Brushes.Black;
-            if (symbol == 'd') {
+            if (str == "Dotted") {
                 polyline.StrokeThickness = 1;
                 DoubleCollection coll = new DoubleCollection();
                 coll.Add(2);

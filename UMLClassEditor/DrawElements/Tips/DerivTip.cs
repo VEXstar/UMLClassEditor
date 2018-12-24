@@ -12,34 +12,31 @@ namespace UMLClassEditor.DrawElements.Tips {
         Point Tip1;
         Point Tip2;
         Point TipEnd;
+        Point TipBegin;
         Polyline polyline = new Polyline();
+        Point TipTale;
         PointCollection pointCollection = new PointCollection();
 
-        public DerivTip(Point point2, char symbol) {
-            int ForX1 = 10;
-            int ForY1 = 10;
-            int ForX2 = 10;
-            int ForY2 = 10;
-            switch (symbol) {
-                case 'L':
-
-                    break;
-                case 'R':
-
-                    break;
-                case 'U':
-
-                    break;
-                case 'D':
-
-                    break;
-            }
+        public DerivTip(Point point2, string str) {
             TipEnd = point2;
-            Tip1 = new Point(point2.X + ForX1, point2.Y + ForY1);
-            Tip2 = new Point(point2.X + ForX2, point2.Y + ForY2);
+            if (str == "TipToRight") {
+                Tip1 = new Point(point2.X - 10, point2.Y - 10);
+                Tip2 = new Point(point2.X - 10, point2.Y + 10);
+                TipBegin = new Point(point2.X - 10, point2.Y);
+                TipTale = new Point(TipEnd.X - 20, TipEnd.Y);
+            }
+            else {
+                Tip1 = new Point(point2.X + 10, point2.Y - 10);
+                Tip2 = new Point(point2.X + 10, point2.Y + 10);
+                TipBegin = new Point(point2.X + 10, point2.Y);
+                TipTale = new Point(TipEnd.X + 20, TipEnd.Y);
+            }
             pointCollection.Add(Tip1);
             pointCollection.Add(TipEnd);
             pointCollection.Add(Tip2);
+            pointCollection.Add(TipBegin);
+            pointCollection.Add(TipTale);
+            pointCollection.Add(TipBegin);
             pointCollection.Add(Tip1);
             polyline.Points = pointCollection;
             polyline.Stroke = Brushes.Black;
@@ -48,6 +45,10 @@ namespace UMLClassEditor.DrawElements.Tips {
 
         public Polyline GetPolyline() {
             return polyline;
+        }
+
+        public Point GetEndPointForLine() {
+            return TipTale;
         }
     }
 }

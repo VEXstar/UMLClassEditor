@@ -14,48 +14,49 @@ namespace UMLClassEditor.DrawElements.Tips {
         Point TipEnd;
         Point TipBegin;
         Polyline polyline = new Polyline();
+        Point TipTale;
         PointCollection pointCollection = new PointCollection();
 
-        public AggregateTip(Point point2, char symbol, char color) {
-            int ForX1 = 10;
-            int ForY1 = 10;
-            int ForX2 = 10;
-            int ForY2 = 10;
-            switch (symbol) {
-                case 'L':
-                    
-                    break;
-                case 'R':
-
-                    break;
-                case 'U':
-
-                    break;
-                case 'D':
-
-                    break;
+        public AggregateTip(Point point2, string str, Brush color) {
+            if (str == "TipToRight") { // хвост выходит из енда, смотрит вправо
+                TipEnd = new Point(point2.X + 20, point2.Y);
+                TipBegin = point2;
+                Tip1 = new Point(point2.X + 10, point2.Y - 10);
+                Tip2 = new Point(point2.X + 10, point2.Y + 10);
+                TipTale = new Point(point2.X + 40, point2.Y);
+                pointCollection.Add(Tip1);
+                pointCollection.Add(TipEnd);
+                pointCollection.Add(TipTale);
+                pointCollection.Add(TipEnd);
+                pointCollection.Add(Tip2);
+                pointCollection.Add(TipBegin);
+                pointCollection.Add(Tip1);
             }
-            TipEnd = point2;
-            Tip1 = new Point(point2.X + ForX1, point2.Y + ForY1);
-            Tip2 = new Point(point2.X + ForX2, point2.Y + ForY2);
-            TipBegin = new Point(point2.X, point2.Y + 2 * ForY1); //без разницы, можно и фор у2
-            pointCollection.Add(Tip1);
-            pointCollection.Add(TipEnd);
-            pointCollection.Add(Tip2);
-            pointCollection.Add(TipBegin);
-            pointCollection.Add(Tip1);
+            else { // хвост выходит из бегина, смотрит влево
+                TipEnd = point2;
+                Tip1 = new Point(point2.X - 10, point2.Y - 10);
+                Tip2 = new Point(point2.X - 10, point2.Y + 10);
+                TipBegin = new Point(point2.X - 20, point2.Y);
+                TipTale = new Point(point2.X - 40, point2.Y);
+                pointCollection.Add(Tip1);
+                pointCollection.Add(TipEnd);
+                pointCollection.Add(Tip2);
+                pointCollection.Add(TipBegin);
+                pointCollection.Add(TipTale);
+                pointCollection.Add(TipBegin);
+                pointCollection.Add(Tip1);
+            }
             polyline.Points = pointCollection;
             polyline.Stroke = Brushes.Black;
-            if (color == 'w') {
-                polyline.Fill = Brushes.White;
-            }
-            else {
-                polyline.Fill = Brushes.Black;
-            }
+            polyline.Fill = color;
         }
 
         public Polyline GetPolyline() {
             return polyline;
+        }
+
+        public Point GetEndPointForLine() {
+            return TipTale;
         }
     }
 }

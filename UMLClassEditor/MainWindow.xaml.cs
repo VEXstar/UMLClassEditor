@@ -23,9 +23,12 @@ namespace UMLClassEditor {
     /// </summary>
     public partial class MainWindow : Window {
         public enum State {
-            Editing, ClassBox, InterfaceBox, AssotiationArrow, DerivArrow, ImplementationArrow, DependenceArrow, AggregationArrow, CompositionArrow
-                //
+            Editing, ClassBox, InterfaceBox, AssociationArrow, DerivArrow, ImplementationArrow, DependenceArrow, AggregationArrow, CompositionArrow
+                
         }
+
+        Point point1;
+        Point point2;
 
         public MainWindow() {
             InitializeComponent();
@@ -34,14 +37,19 @@ namespace UMLClassEditor {
         }
 
         private void DrawCanvasOnPreviewMouseMove(object sender, MouseEventArgs e) {
-            //ss
+            
         }
 
         private void Canvas_MouseDown(object sender, MouseButtonEventArgs e) {
+            point1 = e.GetPosition(drawCanvas);
         }
 
         private void Canvas_MouseUp(object sender, MouseButtonEventArgs e) {
-
+            point2 = e.GetPosition(drawCanvas);
+            AssociationTip tip = new AssociationTip(point2, "TipToRigh");
+            Lines line = new Lines(point1, tip.GetEndPointForLine(), "Dotted");
+            Arrow arrow = new Arrow(line.GetPolyline(), tip.GetPolyline());
+            arrow.draw(drawCanvas);
         }
     }
 }

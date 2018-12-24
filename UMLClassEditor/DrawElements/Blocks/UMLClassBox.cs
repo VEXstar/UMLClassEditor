@@ -190,10 +190,10 @@ namespace UMLClassEditor.DrawElements.Blocks
 
         private void updateStartPoints()
         {
-            twoStartPoints[0].X = Canvas.GetTop(element)+element.Height/2;
-            twoStartPoints[0].Y = Canvas.GetLeft(element);
-            twoStartPoints[1].X = Canvas.GetTop(element)+element.Height/2;
-            twoStartPoints[1].Y = Canvas.GetLeft(element) + element.Width / 2;
+            twoStartPoints[0].X = Canvas.GetLeft(element);
+            twoStartPoints[0].Y = Canvas.GetTop(element) + +element.Height / 2;
+            twoStartPoints[1].Y = Canvas.GetTop(element)+element.Height/2;
+            twoStartPoints[1].X = Canvas.GetLeft(element)+ element.Width;
         }
 
         public Point[] getStartPoints()
@@ -230,8 +230,9 @@ namespace UMLClassEditor.DrawElements.Blocks
                 
             Canvas.SetTop(element, Canvas.GetTop(element) + point.Y - last.Y );
             Canvas.SetLeft(element, Canvas.GetLeft(element) +point.X - last.X);
+
+            NotifyAll(new Point(point.X - last.X, point.Y - last.Y));
             last = point;
-            NotifyAll(new Point(point.X - point.X, point.Y - last.Y));
             updateStartPoints();
         }
 

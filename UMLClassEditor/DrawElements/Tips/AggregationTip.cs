@@ -4,11 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using UMLClassEditor.Interfaces;
 
 namespace UMLClassEditor.DrawElements.Tips {
-    class AggregateTip {
+    class AggregateTip: IObserver
+    {
         Point Tip1;
         Point Tip2;
         Point TipEnd;
@@ -57,6 +60,21 @@ namespace UMLClassEditor.DrawElements.Tips {
 
         public Point GetEndPointForLine() {
             return TipTale;
+        }
+        Point r = new Point(-666,-666);
+        public void onEvent(object e)
+        {
+            if (e is Point s)
+            {
+                if (r.Y == -666)
+                    r = s;
+                Matrix m = new Matrix();
+                m.Translate(r.X,r.Y);
+                r = new Point(r.X+s.X, r.Y + s.Y);
+                MatrixTransform t = new MatrixTransform(m);
+                polyline.RenderTransform = t;
+                
+            }
         }
     }
 }

@@ -5,7 +5,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using UMLClassEditor.DrawElements;
+using UMLClassEditor.DrawElements.Arrows;
 using UMLClassEditor.DrawElements.Blocks;
+using UMLClassEditor.DrawElements.Lines;
+using UMLClassEditor.DrawElements.Tips;
 
 namespace UMLClassEditor {
     /// <summary>
@@ -90,6 +93,8 @@ namespace UMLClassEditor {
 
         }
 
+        private bool doubleClick = false;
+        private UMLElement onebox;
         private void Canvas_MouseUp(object sender, MouseButtonEventArgs e)
         {
             Point now = e.GetPosition((UIElement)sender);
@@ -115,6 +120,43 @@ namespace UMLClassEditor {
                     }
                 }
             }
+            else if(picked == State.AggregationArrow)
+            {
+                if (!doubleClick)
+                {
+                    foreach (var umlElement in elements)
+                    {
+                        if (umlElement.canPick(now)&& umlElement is UMLClassBox)
+                        {
+                            onebox = umlElement;
+                            break;
+                        }
+                        
+                    }
+
+                    doubleClick = true;
+                }
+                else
+                {
+                    foreach (var umlElement in elements)
+                    {
+                        if (umlElement.canPick(now) && umlElement is UMLClassBox)
+                        {
+                            AggregateTip tip = new AggregateTip(((UMLClassBox)umlElement).getStartPoints()[0],"TipFromRight",Brushes.White);
+                            Lines sLines = new Lines(((UMLClassBox)onebox).getStartPoints()[0],tip.GetEndPointForLine(),"solid");
+                            Arrow arrow = new Arrow(sLines.GetPolyline(),tip.GetPolyline());
+                            arrow.draw(drawCanvas);
+                            ((UMLClassBox)umlElement).addObserver(tip);
+                            break;
+                        }
+
+                    }
+                    picked = State.Editing;
+                    ClassSelected.Background = InterfaceSelected.Background = DependeceSelected.Background =
+                        DeriveSelected.Background = AccationSelected.Background = Brushes.Transparent;
+                    doubleClick = false;
+                }
+            }
 
             isMoving = false;
         }
@@ -138,7 +180,7 @@ namespace UMLClassEditor {
 
         private void DependeceSelected_OnClick(object sender, RoutedEventArgs e)
         {
-            picked = State.DependenceArrow;
+            picked = State.AggregationArrow;
             DependeceSelected.Background = Brushes.RoyalBlue;
             InterfaceSelected.Background = ClassSelected.Background =
                 DeriveSelected.Background = AccationSelected.Background = Brushes.Transparent;

@@ -16,6 +16,7 @@ namespace UMLClassEditor.DrawElements.Blocks
         private TextBox className;
         private List<TextBox> fields  = new List<TextBox>();
         private List<TextBox> methods = new List<TextBox>();
+        Point[] twoStartPoints = new Point[2];
         public const int TYPE_CLASS = 1;
         public const int TYPE_INTERAFCE = 2;
         private Border element;
@@ -40,11 +41,29 @@ namespace UMLClassEditor.DrawElements.Blocks
 
         }
 
+        public override void setPicked(bool set)
+        {
+            isPicked = set;
+            if (set)
+            {
+                element.BorderBrush = Brushes.OrangeRed;
+            }
+            else
+            {
+                element.BorderBrush = (type == TYPE_CLASS) ? Brushes.Black : Brushes.Blue;
+            }
+        }
+
         public override void draw(Canvas canvas)
         {
             canvas.Children.Remove(element);
             canvas.Children.Add(element);
             
+        }
+
+        public override void deleteFrom(Canvas canvas)
+        {
+            canvas.Children.Remove(element);
         }
 
         public UIElement getGraph()
@@ -60,7 +79,7 @@ namespace UMLClassEditor.DrawElements.Blocks
             border.BorderThickness = new Thickness(2);
             border.BorderBrush = (type == TYPE_CLASS) ? Brushes.Black : Brushes.Blue;
             border.Width = 180;
-            border.Height = 120;
+            border.Height = 134;
 
             int widthset = (int)border.Width - 6;
             border.Child = canvas;
@@ -150,6 +169,7 @@ namespace UMLClassEditor.DrawElements.Blocks
             Canvas.SetTop(newMethodButton, drop);
             canvas.Children.Add(newMethodButton);
             border.Height = drop+standartHeight+10;
+            updateStartPoints();
         }
 
         private void TextBoxOnKeyUp(object sender, KeyEventArgs e)
@@ -166,6 +186,19 @@ namespace UMLClassEditor.DrawElements.Blocks
                 }
                 generateBorder(element);
             }
+        }
+
+        private void updateStartPoints()
+        {
+            twoStartPoints[0].X = Canvas.GetTop(element)+element.Height/2;
+            twoStartPoints[0].Y = Canvas.GetLeft(element);
+            twoStartPoints[1].X = Canvas.GetTop(element)+element.Height/2;
+            twoStartPoints[1].Y = Canvas.GetLeft(element) + element.Width / 2;
+        }
+
+        public Point[] getStartPoints()
+        {
+            return twoStartPoints;
         }
 
         private void NewMethodButtonOnClick(object sender, RoutedEventArgs e)
@@ -185,14 +218,31 @@ namespace UMLClassEditor.DrawElements.Blocks
            
         }
 
-
-        public override void move(int dx, int dy)
+        Point last = new Point(-666,-666);
+        public override void move(Point point)
         {
-
-            Canvas.SetTop(element, Canvas.GetTop(element) + dy);
-            Canvas.SetLeft(element, Canvas.GetLeft(element) + dx);
-            NotifyAll(new int[]{dx,dy});
+            if (last.X == -666 && last.Y == -666)
+            {
+                last = point;
+                return;
+                
+            }
+                
+            Canvas.SetTop(element, Canvas.GetTop(element) + point.Y - last.Y );
+            Canvas.SetLeft(element, Canvas.GetLeft(element) +point.X - last.X);
+            last = point;
+            NotifyAll(new Point(point.X - point.X, point.Y - last.Y));
+            updateStartPoints();
         }
+
+        public override bool canPick(Point point)
+        {
+            double left = Canvas.GetLeft(element);
+            double top = Canvas.GetTop(element);
+            return (left < point.X) && (left + element.Width > point.X) && (top < point.Y) &&
+                   (top + 40 > point.Y);
+        }
+
         List<IObserver> observers = new List<IObserver>();
         public void addObserver(IObserver observer)
         {

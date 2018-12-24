@@ -19,7 +19,7 @@ namespace UMLClassEditor.DrawElements.Blocks
         private Border element;
         private int standartHeight = 18;
 
-        public UMLClassBox(int type,string className)
+        public UMLClassBox(int type,string className,Point st)
         {
             this.className = new TextBox();
             this.type = type;
@@ -32,8 +32,8 @@ namespace UMLClassEditor.DrawElements.Blocks
             methods.Add(text);
 
             element = new Border();
-            Canvas.SetTop(element, 0);
-            Canvas.SetLeft(element, 0);
+            Canvas.SetTop(element, st.Y);
+            Canvas.SetLeft(element, st.X);
             generateBorder(element);
 
         }

@@ -7,31 +7,34 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <Menu Height="18" VerticalAlignment="Top">
+        <Menu Height="20" VerticalAlignment="Top">
             <MenuItem Header="Файл">
                 <MenuItem Header="Открыть"></MenuItem>
                 <MenuItem Header="Сохранить"></MenuItem>
             </MenuItem>
             <MenuItem Header="Правка">
                 <MenuItem Header="Undo"></MenuItem>
-                <MenuItem Header="Redo"></MenuItem>
             </MenuItem>
             <MenuItem Header="Проект">
                 <MenuItem Header="Экспорт"></MenuItem>
                 <MenuItem Header="Сохранить"></MenuItem>
             </MenuItem>
         </Menu>
-        <Canvas Margin="100,18,0,0" MouseDown="Canvas_MouseDown" MouseUp="Canvas_MouseUp" Name="MainCanvas">
+        <Canvas Margin="0,60,0,0" MouseDown="Canvas_MouseDown" MouseUp="Canvas_MouseUp" Name="drawCanvas">
             <Canvas.Background>
                 <SolidColorBrush Color="White" Opacity="0"/>
             </Canvas.Background>
-            <Border   Height="101" Width="119">
-               <Grid Height="100" Canvas.Left="204" Canvas.Top="123" Width="100">
-
-               </Grid>
-            </Border>
         </Canvas>
-        <Grid HorizontalAlignment="Left" Margin="0,18,0,0" Width="100" Background="#FFF1C0C0"/>
+        <Grid Margin="0,20,0,0" Background="#FFF1C0C0" Height="40" VerticalAlignment="Top">
+            <Button Name="ClassSelected"  Background="Transparent" BorderThickness="0" FontSize="24" Content="CL" HorizontalAlignment="Left" VerticalAlignment="Top" Width="34"/>
+            <Button Name="InterfaceSelected" Background="Transparent" BorderThickness="0" FontSize="24" Content="IN" HorizontalAlignment="Left" VerticalAlignment="Top" Width="34" Margin="39,0,0,0"/>
+            <Button Background="Transparent" BorderThickness="0" FontSize="24" Content="⇠" HorizontalAlignment="Left" VerticalAlignment="Top" Width="34" Margin="78,0,0,0"/>
+            <Button Background="Transparent" BorderThickness="0" FontSize="24" Content="⇽" HorizontalAlignment="Left" VerticalAlignment="Top" Width="34" Margin="117,0,0,0"/>
+            <Button Background="Transparent" BorderThickness="0" FontSize="24" Content="←" HorizontalAlignment="Left" VerticalAlignment="Top" Width="34" Margin="156,0,0,0"/>
+            <Button Background="Transparent" BorderThickness="0" FontSize="24" Content="⇠" HorizontalAlignment="Left" VerticalAlignment="Top" Width="34" Margin="195,0,0,0"/>
+            <Button Background="Transparent" BorderThickness="0" FontSize="24" Content="⇽" HorizontalAlignment="Left" VerticalAlignment="Top" Width="34" Margin="234,0,0,0"/>
+            <Button Background="Transparent" BorderThickness="0" FontSize="24" Content="←" HorizontalAlignment="Left" VerticalAlignment="Top" Width="34" Margin="273,0,0,0"/>
+        </Grid>
 
 
     </Grid>

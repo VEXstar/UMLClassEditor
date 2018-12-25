@@ -126,7 +126,7 @@ namespace UMLClassEditor {
                     LineCompanator.Tips s;
                     s = convertTip();
                     doubleClick = false;
-                    LineCompanator line = new LineCompanator(fblock,getPickedElement(now),s);
+                    LineCompanator line = new LineCompanator(fblock,getPickedElement(now),s, drawCanvas);
                     line.draw(drawCanvas);
                     elements.Add(line);
                     setMode(State.Editing);

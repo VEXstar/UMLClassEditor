@@ -6,5 +6,6 @@
         void removeObserver(IObserver observer);
         void removeAll();
         void NotifyAll(object e);
+        void NotifyAboutDelete();
     }
 }

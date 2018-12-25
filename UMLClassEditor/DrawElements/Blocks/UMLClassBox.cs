@@ -64,7 +64,9 @@ namespace UMLClassEditor.DrawElements.Blocks
         public override void deleteFrom(Canvas canvas)
         {
             canvas.Children.Remove(element);
-            NotifyAll(canvas);
+            // NotifyAll(canvas);
+            NotifyAboutDelete();
+            removeAll();
         }
 
         public UIElement getGraph()
@@ -276,6 +278,12 @@ namespace UMLClassEditor.DrawElements.Blocks
             foreach (var observer in observers)
             {
                observer.onEvent(e);
+            }
+        }
+
+        public void NotifyAboutDelete() {
+            foreach (var observer in observers) {
+                observer.UpdateForDelete();
             }
         }
     }

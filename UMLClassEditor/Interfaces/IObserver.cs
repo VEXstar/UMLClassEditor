@@ -3,5 +3,6 @@
     public interface IObserver
     {
         void onEvent(object e);
+        void UpdateForDelete();
     }
 }

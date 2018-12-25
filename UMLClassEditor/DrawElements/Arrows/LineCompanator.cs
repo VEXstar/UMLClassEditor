@@ -4,10 +4,11 @@ using System.Windows.Media;
 using UMLClassEditor.DrawElements.Blocks;
 using UMLClassEditor.DrawElements.Lines;
 using UMLClassEditor.DrawElements.Tips;
+using UMLClassEditor.Interfaces;
 
 namespace UMLClassEditor.DrawElements.Arrows
 {
-    public class LineCompanator:UMLElement
+    public class LineCompanator : UMLElement, IObserver
     {
         public enum Tips
         {
@@ -16,9 +17,13 @@ namespace UMLClassEditor.DrawElements.Arrows
 
         private Arrow arrow;
         private Lines.Lines a;
+        Tip t = null;
+        Lines.Lines r = null;
+        Canvas canvas;
 
-        public LineCompanator(UMLElement firstBlock, UMLElement secondBlock, Tips type)
+        public LineCompanator(UMLElement firstBlock, UMLElement secondBlock, Tips type, Canvas canvas)
         {
+            this.canvas = canvas;
             if(!(firstBlock is UMLClassBox)||!(secondBlock is UMLClassBox))
                 return;
             UMLClassBox f = firstBlock as UMLClassBox;
@@ -29,8 +34,8 @@ namespace UMLClassEditor.DrawElements.Arrows
             string turn = (ox <0) ? "r" : "l";
             int indS = (ox < 0) ? 1 : 0;
             int indF = (ox < 0) ? 0 : 1;
-            Tip t = null;
-            Lines.Lines r = null; 
+            //Tip t = null;
+            //Lines.Lines r = null; 
             if (type == Tips.AssotiationArrow)
             {
                 t = new AssociationTip(s.getStartPoints()[indS],turn);
@@ -67,6 +72,8 @@ namespace UMLClassEditor.DrawElements.Arrows
             r.setConnectElems(f,t);
             arrow = new Arrow(r.GetPolyline(),t.GetPolyline());
             s.addObserver(t);
+            f.addObserver(this);
+            s.addObserver(this);
         }
 
         public override void setPicked(bool set)
@@ -96,6 +103,15 @@ namespace UMLClassEditor.DrawElements.Arrows
         public override void update(Canvas canvas)
         {
             a.reDraw(canvas);
+        }
+
+        public void onEvent(object e) {
+           // ноль реакции
+        }
+
+        public void UpdateForDelete() {
+            canvas.Children.Remove(r.GetPolyline());
+            canvas.Children.Remove(t.GetPolyline());
         }
     }
 }

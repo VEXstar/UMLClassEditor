@@ -12,12 +12,12 @@ using UMLClassEditor.DrawElements.Tips;
 using UMLClassEditor.Interfaces;
 
 namespace UMLClassEditor.DrawElements.Lines {
-    class Lines:IObserver {
+    class Lines {
         Polyline polyline = new Polyline();
         PointCollection pointCollection = new PointCollection();
+
         public Lines(Point startPoint, Point endPoint, string str)
         {
-
             pointCollection.Add(startPoint);
             pointCollection.Add(endPoint);
             polyline.Points = pointCollection;
@@ -48,10 +48,6 @@ namespace UMLClassEditor.DrawElements.Lines {
         }
         public Polyline GetPolyline() {
             return polyline;
-        }
-
-        public void onEvent(object e)
-        {
         }
     }
 }

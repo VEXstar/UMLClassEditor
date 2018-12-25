@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -78,7 +79,10 @@ namespace UMLClassEditor {
                 {
                     isMoving = true;
                     g.move(now);
+                    update();
                 }
+
+
             }
         }
 
@@ -110,7 +114,7 @@ namespace UMLClassEditor {
                     return;
                 }
             }
-            else
+            else if(picked != State.Editing)
             {
                 if (!doubleClick)
                 {
@@ -119,34 +123,12 @@ namespace UMLClassEditor {
                 }
                 else
                 {
-                    LineCompanator.Tips s = LineCompanator.Tips.AssotiationArrow;
-                    if (picked == State.AggregationArrow)
-                    {
-                        s = LineCompanator.Tips.AggregationArrow;
-                    }
-                    else if (picked == State.AssotiationArrow)
-                    {
-                        s = LineCompanator.Tips.AssotiationArrow;
-                    }
-                    else if (picked == State.CompositionArrow)
-                    {
-                        s = LineCompanator.Tips.CompositionArrow;
-                    }
-                    else if (picked == State.DependenceArrow)
-                    {
-                        s = LineCompanator.Tips.DependenceArrow;
-                    }
-                    else if (picked == State.DerivArrow)
-                    {
-                        s = LineCompanator.Tips.DerivArrow;
-                    }
-                    else if (picked == State.ImplementationArrow)
-                    {
-                        s = LineCompanator.Tips.ImplementationArrow;
-                    }
+                    LineCompanator.Tips s;
+                    s = convertTip();
                     doubleClick = false;
                     LineCompanator line = new LineCompanator(fblock,getPickedElement(now),s);
                     line.draw(drawCanvas);
+                    elements.Add(line);
                     setMode(State.Editing);
                 }
 
@@ -196,6 +178,43 @@ namespace UMLClassEditor {
             setMode(State.CompositionArrow);
         }
 
+        private void update()
+        {
+            foreach (var umlElement in elements)
+            {
+                umlElement.update(drawCanvas);
+            }
+        }
+        private LineCompanator.Tips convertTip()
+        {
+            LineCompanator.Tips s = LineCompanator.Tips.AssotiationArrow;
+            if (picked == State.AggregationArrow)
+            {
+                s = LineCompanator.Tips.AggregationArrow;
+            }
+            else if (picked == State.AssotiationArrow)
+            {
+                s = LineCompanator.Tips.AssotiationArrow;
+            }
+            else if (picked == State.CompositionArrow)
+            {
+                s = LineCompanator.Tips.CompositionArrow;
+            }
+            else if (picked == State.DependenceArrow)
+            {
+                s = LineCompanator.Tips.DependenceArrow;
+            }
+            else if (picked == State.DerivArrow)
+            {
+                s = LineCompanator.Tips.DerivArrow;
+            }
+            else if (picked == State.ImplementationArrow)
+            {
+                s = LineCompanator.Tips.ImplementationArrow;
+            }
+
+            return s;
+        }
         private void setMode(State set)
         {
             AccationSelected.Background = DeriveSelected.Background = InterfaceSelected.Background =

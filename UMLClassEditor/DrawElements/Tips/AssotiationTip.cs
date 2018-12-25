@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using UMLClassEditor.DrawElements.Tips;
@@ -44,8 +45,8 @@ namespace UMLClassEditor.DrawElements.Lines {
             return polyline;
         }
 
-        public override Point GetEndPointForLine() {
-            return TipTale;
+        public override  Point GetEndPointForLine() {
+            return  TipTale;
         }
 
         Point r = new Point(-666, -666);
@@ -60,7 +61,7 @@ namespace UMLClassEditor.DrawElements.Lines {
                 r = new Point(r.X + s.X, r.Y + s.Y);
                 MatrixTransform t = new MatrixTransform(m);
                 polyline.RenderTransform = t;
-
+                TipTale = new Point(TipTale.X + s.X, TipTale.Y + s.Y);
             }
         }
     }

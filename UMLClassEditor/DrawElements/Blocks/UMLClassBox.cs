@@ -64,6 +64,7 @@ namespace UMLClassEditor.DrawElements.Blocks
         public override void deleteFrom(Canvas canvas)
         {
             canvas.Children.Remove(element);
+            NotifyAll(canvas);
         }
 
         public UIElement getGraph()
@@ -196,9 +197,9 @@ namespace UMLClassEditor.DrawElements.Blocks
             twoStartPoints[1].X = Canvas.GetLeft(element)+ element.Width;
         }
 
-        public Point[] getStartPoints()
+        public  Point[] getStartPoints()
         {
-            return twoStartPoints;
+            return  twoStartPoints;
         }
 
         public Point GetCenterPoint()
@@ -247,6 +248,11 @@ namespace UMLClassEditor.DrawElements.Blocks
             double top = Canvas.GetTop(element);
             return (left < point.X) && (left + element.Width > point.X) && (top < point.Y) &&
                    (top + 40 > point.Y);
+        }
+
+        public override void update(Canvas canvas)
+        {
+            
         }
 
         List<IObserver> observers = new List<IObserver>();

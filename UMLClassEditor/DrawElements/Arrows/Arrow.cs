@@ -41,5 +41,10 @@ namespace UMLClassEditor.DrawElements.Arrows {
         {
             throw new NotImplementedException();
         }
+
+        public override void update(Canvas canvas)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

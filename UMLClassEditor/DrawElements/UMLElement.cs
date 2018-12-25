@@ -17,5 +17,6 @@ namespace UMLClassEditor.DrawElements
         public abstract void deleteFrom(Canvas canvas);
         public abstract void move(Point point);
         public abstract bool canPick(Point point);
+        public abstract void update(Canvas canvas);
     }
 }

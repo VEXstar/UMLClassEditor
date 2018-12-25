@@ -73,7 +73,7 @@ namespace UMLClassEditor.DrawElements.Tips {
                 r = new Point(r.X+s.X, r.Y + s.Y);
                 MatrixTransform t = new MatrixTransform(m);
                 polyline.RenderTransform = t;
-                
+                TipTale = new Point(TipTale.X+s.X,TipTale.Y+s.Y);
             }
         }
     }

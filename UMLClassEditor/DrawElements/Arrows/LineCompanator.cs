@@ -15,6 +15,7 @@ namespace UMLClassEditor.DrawElements.Arrows
         }
 
         private Arrow arrow;
+        private Lines.Lines a;
 
         public LineCompanator(UMLElement firstBlock, UMLElement secondBlock, Tips type)
         {
@@ -62,6 +63,8 @@ namespace UMLClassEditor.DrawElements.Arrows
                 r = new Lines.Lines(f.getStartPoints()[indF], t.GetEndPointForLine(), "Dotted");
             }
 
+            a = r;
+            r.setConnectElems(f,t);
             arrow = new Arrow(r.GetPolyline(),t.GetPolyline());
             s.addObserver(t);
         }
@@ -88,6 +91,11 @@ namespace UMLClassEditor.DrawElements.Arrows
         public override bool canPick(Point point)
         {
             return false;
+        }
+
+        public override void update(Canvas canvas)
+        {
+            a.reDraw(canvas);
         }
     }
 }

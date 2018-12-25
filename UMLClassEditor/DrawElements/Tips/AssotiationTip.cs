@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using UMLClassEditor.DrawElements.Tips;
 using UMLClassEditor.Interfaces;
 
 namespace UMLClassEditor.DrawElements.Lines {
-    class AssociationTip:IObserver
+    class AssociationTip: Tip, IObserver
     {
         Point Tip1;
         Point Tip2;
@@ -39,16 +40,16 @@ namespace UMLClassEditor.DrawElements.Lines {
             polyline.Stroke = Brushes.Black;
         }
 
-        public Polyline GetPolyline() {
+        public override Polyline GetPolyline() {
             return polyline;
         }
 
-        public Point GetEndPointForLine() {
+        public override Point GetEndPointForLine() {
             return TipTale;
         }
 
         Point r = new Point(-666, -666);
-        public void onEvent(object e)
+        public override void onEvent(object e)
         {
             if (e is Point s)
             {

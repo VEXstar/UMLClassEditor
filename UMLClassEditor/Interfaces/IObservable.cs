@@ -4,6 +4,7 @@
     {
         void addObserver(IObserver observer);
         void removeObserver(IObserver observer);
+        void removeAll();
         void NotifyAll(object e);
     }
 }

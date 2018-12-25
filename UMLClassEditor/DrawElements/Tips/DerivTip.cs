@@ -10,7 +10,7 @@ using UMLClassEditor.Interfaces;
 
 namespace UMLClassEditor.DrawElements.Tips
 {
-    class DerivTip: IObserver
+    class DerivTip: Tip, IObserver
     {
         Point Tip1;
         Point Tip2;
@@ -22,7 +22,7 @@ namespace UMLClassEditor.DrawElements.Tips
 
         public DerivTip(Point point2, string str) {
             TipEnd = point2;
-            if (str == "TipToRight") {
+            if (str == "l") {
                 Tip1 = new Point(point2.X - 10, point2.Y - 10);
                 Tip2 = new Point(point2.X - 10, point2.Y + 10);
                 TipBegin = new Point(point2.X - 10, point2.Y);
@@ -46,18 +46,18 @@ namespace UMLClassEditor.DrawElements.Tips
             polyline.Fill = Brushes.White;
         }
 
-        public Polyline GetPolyline()
+        public override Polyline GetPolyline()
         {
             return polyline;
         }
 
-        public Point GetEndPointForLine()
+        public override Point GetEndPointForLine()
         {
             return TipTale;
         }
 
         Point r = new Point(-666, -666);
-        public void onEvent(object e)
+        public override void onEvent(object e)
         {
             if (e is Point s)
             {

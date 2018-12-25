@@ -73,17 +73,11 @@ namespace UMLClassEditor {
             }
             else if(e.LeftButton == MouseButtonState.Pressed)
             {
-                foreach (var elem in elements)
+                UMLElement g = getPickedElement(now);
+                if (g != null)
                 {
-                    if (elem.canPick(now))
-                    {
-                        isMoving = true;
-                        elem.move(now);
-                        break;
-                        
-                    }
-                      
-
+                    isMoving = true;
+                    g.move(now);
                 }
             }
         }
@@ -94,7 +88,7 @@ namespace UMLClassEditor {
         }
 
         private bool doubleClick = false;
-        private UMLElement onebox;
+        private UMLElement fblock;
         private void Canvas_MouseUp(object sender, MouseButtonEventArgs e)
         {
             Point now = e.GetPosition((UIElement)sender);
@@ -103,59 +97,59 @@ namespace UMLClassEditor {
                drawCanvas.Children.Remove(rectangle);
                now = new Point(now.X - rectangle.Width / 2, now.Y - rectangle.Height / 2);
                UMLClassBox box = new UMLClassBox((picked==State.ClassBox)? UMLClassBox.TYPE_CLASS:UMLClassBox.TYPE_INTERAFCE,"SomeClass",now);
-                box.draw(drawCanvas);
-                picked = State.Editing;
-                ClassSelected.Background = InterfaceSelected.Background = DependeceSelected.Background =
-                    DeriveSelected.Background = AccationSelected.Background = Brushes.Transparent;
+               box.draw(drawCanvas);
                 elements.Add(box);
+                setMode(State.Editing);
             }
             else if (picked == State.Editing&&!isMoving)
             {
-                foreach (var umlElement in elements)
+                UMLElement g = getPickedElement(now);
+                if (g != null)
                 {
-                    if (umlElement.canPick(now))
-                    {
-                        umlElement.setPicked(!umlElement.getPicked());
-                        return;
-                    }
+                    g.setPicked(!g.getPicked());
+                    return;
                 }
             }
-            else if(picked == State.AggregationArrow)
+            else
             {
                 if (!doubleClick)
                 {
-                    foreach (var umlElement in elements)
-                    {
-                        if (umlElement.canPick(now)&& umlElement is UMLClassBox)
-                        {
-                            onebox = umlElement;
-                            break;
-                        }
-                        
-                    }
-
                     doubleClick = true;
+                    fblock = getPickedElement(now);
                 }
                 else
                 {
-                    foreach (var umlElement in elements)
+                    LineCompanator.Tips s = LineCompanator.Tips.AssotiationArrow;
+                    if (picked == State.AggregationArrow)
                     {
-                        if (umlElement.canPick(now) && umlElement is UMLClassBox)
-                        {
-                            AggregateTip tip = new AggregateTip(((UMLClassBox)umlElement).getStartPoints()[0],"TipFromRight",Brushes.White);
-                            Lines sLines = new Lines(((UMLClassBox)onebox).getStartPoints()[0],tip.GetEndPointForLine(),"solid");
-                            Arrow arrow = new Arrow(sLines.GetPolyline(),tip.GetPolyline());
-                            arrow.draw(drawCanvas);
-                            ((UMLClassBox)umlElement).addObserver(tip);
-                            break;
-                        }
-
+                        s = LineCompanator.Tips.AggregationArrow;
                     }
-                    picked = State.Editing;
-                    ClassSelected.Background = InterfaceSelected.Background = DependeceSelected.Background =
-                        DeriveSelected.Background = AccationSelected.Background = Brushes.Transparent;
+                    else if (picked == State.AssotiationArrow)
+                    {
+                        s = LineCompanator.Tips.AssotiationArrow;
+                    }
+                    else if (picked == State.CompositionArrow)
+                    {
+                        s = LineCompanator.Tips.CompositionArrow;
+                    }
+                    else if (picked == State.DependenceArrow)
+                    {
+                        s = LineCompanator.Tips.DependenceArrow;
+                    }
+                    else if (picked == State.DerivArrow)
+                    {
+                        s = LineCompanator.Tips.DerivArrow;
+                    }
+                    else if (picked == State.ImplementationArrow)
+                    {
+                        s = LineCompanator.Tips.ImplementationArrow;
+                    }
                     doubleClick = false;
+                    LineCompanator line = new LineCompanator(fblock,getPickedElement(now),s);
+                    line.draw(drawCanvas);
+                    setMode(State.Editing);
                 }
+
             }
 
             isMoving = false;
@@ -163,43 +157,91 @@ namespace UMLClassEditor {
 
         private void ClassSelected_Click(object sender, RoutedEventArgs e)
         {
-            picked = State.ClassBox;
-            ClassSelected.Background = Brushes.RoyalBlue;
-            InterfaceSelected.Background = DependeceSelected.Background =
-                DeriveSelected.Background = AccationSelected.Background = Brushes.Transparent;
+            setMode(State.ClassBox);
         }
 
         private void InterfaceSelected_OnClick(object sender, RoutedEventArgs e)
         {
-            picked = State.InterfaceBox;
-            InterfaceSelected.Background = Brushes.RoyalBlue;
-            AccationSelected.Background = ClassSelected.Background =
-                DependeceSelected.Background = DeriveSelected.Background = Brushes.Transparent;
+            setMode(State.InterfaceBox);
         }
         
 
         private void DependeceSelected_OnClick(object sender, RoutedEventArgs e)
         {
-            picked = State.AggregationArrow;
-            DependeceSelected.Background = Brushes.RoyalBlue;
-            InterfaceSelected.Background = ClassSelected.Background =
-                DeriveSelected.Background = AccationSelected.Background = Brushes.Transparent;
+            setMode(State.DependenceArrow);
         }
 
         private void DeriveSelected_OnClick(object sender, RoutedEventArgs e)
         {
-            picked = State.DerivArrow;
-            DeriveSelected.Background = Brushes.RoyalBlue;
-            InterfaceSelected.Background = ClassSelected.Background =
-                DependeceSelected.Background = AccationSelected.Background = Brushes.Transparent;
+            setMode(State.DerivArrow);
         }
 
         private void AccationSelected_OnClick(object sender, RoutedEventArgs e)
         {
-            picked = State.AssotiationArrow;
-            AccationSelected.Background = Brushes.RoyalBlue;
-            InterfaceSelected.Background = ClassSelected.Background =
-                DependeceSelected.Background = DeriveSelected.Background = Brushes.Transparent;
+            setMode(State.AssotiationArrow);
+        }
+
+        private void Implementation_selected_OnClick(object sender, RoutedEventArgs e)
+        {
+            setMode(State.ImplementationArrow);
+        }
+
+        private void AggregationSelected_OnClick(object sender, RoutedEventArgs e)
+        {
+            setMode(State.AggregationArrow);
+        }
+
+        private void CompositionSelected_OnClick(object sender, RoutedEventArgs e)
+        {
+            setMode(State.CompositionArrow);
+        }
+
+        private void setMode(State set)
+        {
+            AccationSelected.Background = DeriveSelected.Background = InterfaceSelected.Background =
+                ClassSelected.Background = DependeceSelected.Background = CompositionSelected.Background =
+                    Implementation_selected.Background = AggregationSelected.Background = Brushes.Transparent;
+            switch (set)
+            {
+                case State.AssotiationArrow:
+                    AccationSelected.Background = Brushes.RoyalBlue;
+                    break;
+                case State.AggregationArrow:
+                    AggregationSelected.Background = Brushes.RoyalBlue;
+                    break;
+                case State.ClassBox:
+                    ClassSelected.Background = Brushes.RoyalBlue;
+                    break;
+                case State.CompositionArrow:
+                    CompositionSelected.Background = Brushes.RoyalBlue;
+                    break;
+                case State.DependenceArrow:
+                    DependeceSelected.Background = Brushes.RoyalBlue;
+                    break;
+                case State.DerivArrow:
+                    DeriveSelected.Background = Brushes.RoyalBlue;
+                    break;
+                case State.ImplementationArrow:
+                    Implementation_selected.Background = Brushes.RoyalBlue;
+                    break;
+                case State.InterfaceBox:
+                    InterfaceSelected.Background = Brushes.RoyalBlue;
+                    break;
+            }
+            picked = set;
+        }
+
+        private UMLElement getPickedElement(Point find)
+        {
+            foreach (var umlElement in elements)
+            {
+                if (umlElement.canPick(find))
+                {
+                    return umlElement;
+                }
+            }
+
+            return null;
         }
     }
 }

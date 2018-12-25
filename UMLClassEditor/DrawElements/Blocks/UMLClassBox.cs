@@ -201,6 +201,11 @@ namespace UMLClassEditor.DrawElements.Blocks
             return twoStartPoints;
         }
 
+        public Point GetCenterPoint()
+        {
+            return new Point(Canvas.GetLeft(element)+element.Width/2, Canvas.GetTop(element) + element.Height / 2);
+        }
+
         private void NewMethodButtonOnClick(object sender, RoutedEventArgs e)
         {
             TextBox text = new TextBox();
@@ -253,6 +258,11 @@ namespace UMLClassEditor.DrawElements.Blocks
         public void removeObserver(IObserver observer)
         {
             observers.Remove(observer);
+        }
+
+        public void removeAll()
+        {
+            observers.Clear();
         }
 
         public void NotifyAll(object e)

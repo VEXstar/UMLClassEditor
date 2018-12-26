@@ -22,5 +22,6 @@ namespace UMLClassEditor.DrawElements
         public abstract void move(Point point, Canvas canvas);
         public abstract bool canPick(Point point);
         public abstract string getGuid();
+        public abstract void updateGUI();
     }
 }

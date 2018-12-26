@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using UMLClassEditor.DrawElements.Blocks;
 using UMLClassEditor.DrawElements.Lines;
@@ -48,6 +50,8 @@ namespace UMLClassEditor.DrawElements.Arrows
                     r = new BetweenLine(getPointForFirstBLock(), t.GetEndPointForLine(), BetweenLine.Type.Dotted);
                     break;
             }
+
+            fieldsSync();
             fb.addObserver(this);
             sb.addObserver(this);
         }
@@ -132,13 +136,11 @@ namespace UMLClassEditor.DrawElements.Arrows
             return "s";
         }
 
-        public void onEvent(object sender, object e)
+        public override void updateGUI()
         {
-            if (sender is UMLClassBox && e is moveStruct point)
-            {
-                move(point.offset,point.WorkCanvas);
-            }
+            throw new NotImplementedException();
         }
+
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
@@ -185,8 +187,162 @@ namespace UMLClassEditor.DrawElements.Arrows
                     r = new BetweenLine(getPointForFirstBLock(), t.GetEndPointForLine(), BetweenLine.Type.Dotted);
                     break;
             }
+            fieldsSync();
             fb.addObserver(this);
             sb.addObserver(this);
         }
+
+        public void onEvent(object sender, object e, object type)
+        {
+            if (sender is UMLClassBox && e is moveStruct point&&((UMLClassBox.NotifyType)type) == UMLClassBox.NotifyType.Move)
+            {
+                move(point.offset, point.WorkCanvas);
+            }
+            else if (sender is UMLClassBox&&((UMLClassBox)sender) == sb && ((UMLClassBox.NotifyType) type) == UMLClassBox.NotifyType.Change)
+            {
+                TextBox h = e as TextBox;
+                foreach (var textBox in fb.getFieldsList())
+                {
+                    if (textBox.Name != h.Name) continue;
+                    textBox.Text = h.Text;
+                  //  fb.updateGUI();
+                    return;
+                }
+                foreach (var textBox in fb.getMethodsList())
+                {
+                    if (textBox.Name != h.Name) continue;
+                    textBox.Text = h.Text;
+                  //  fb.updateGUI();
+                    return;
+                }
+            }
+            else if (sender is UMLClassBox && ((UMLClassBox) sender) == sb &&
+                     ((UMLClassBox.NotifyType) type) == UMLClassBox.NotifyType.AddM)
+            {
+                TextBox h = e as TextBox;
+                TextBox n = new TextBox();
+                n.Name = h.Name;
+                n.Text = h.Text;
+                fb.getMethodsList().Add(n);
+                fb.imitateEvent(n,type);
+                fb.updateGUI();
+            }
+            else if (sender is UMLClassBox && ((UMLClassBox)sender) == sb &&
+                     ((UMLClassBox.NotifyType)type) == UMLClassBox.NotifyType.AddF)
+            {
+                TextBox h = e as TextBox;
+                TextBox n = new TextBox();
+                n.Name = h.Name;
+                n.Text = h.Text;
+                fb.getFieldsList().Add(n);
+                fb.imitateEvent(n, type);
+                fb.updateGUI();
+            }
+            else if (sender is UMLClassBox && ((UMLClassBox)sender) == sb &&
+                     ((UMLClassBox.NotifyType)type) == UMLClassBox.NotifyType.DeleteL)
+            {
+                TextBox h = e as TextBox;
+                TextBox todelet = null;
+                foreach (var textBox in fb.getFieldsList())
+                {
+                    if (textBox.Name == h.Name)
+                    {
+                        todelet = textBox;
+                        break;
+                    }
+
+                }
+
+                if (todelet != null)
+                {
+                    fb.getFieldsList().Remove(todelet);
+                    fb.imitateEvent(todelet, type);
+                    fb.updateGUI();
+                    return;
+                }
+                foreach (var textBox in fb.getMethodsList())
+                {
+                    if (textBox.Name == h.Name)
+                    {
+                        todelet = textBox;
+                        break;
+                    }
+
+                }
+                if (todelet != null)
+                {
+                    fb.getFieldsList().Remove(todelet);
+                    fb.imitateEvent(todelet, type);
+                    fb.updateGUI();
+                }
+            }
+            else if (sender is UMLClassBox &&
+                     ((UMLClassBox.NotifyType) type) == UMLClassBox.NotifyType.Delete)
+            {
+                //TODO: самовыпиливание из хранилища
+            }
+        }
+
+        private void fieldsSync()
+        {
+            List<TextBox> fM = fb.getMethodsList();
+            List<TextBox> fF = fb.getFieldsList();
+            List<TextBox> sM = sb.getMethodsList();
+            List<TextBox> sF = sb.getFieldsList();
+            if (mode == Tips.ImplementationArrow || mode == Tips.DerivArrow)
+            {
+                foreach (var textBox in sM)
+                {
+                    if(textBox.Text.StartsWith("-"))
+                        continue;
+                    bool founded = false;
+                    foreach (var box in fM)
+                    {
+                        if (box.Text.Contains(textBox.Text.Replace(textBox.Text.Substring(0, 1), "")))
+                        {
+                            box.Name = textBox.Name;
+                            founded = true;
+                            break;
+                        }
+                        
+                    }
+
+                    if (!founded)
+                    {
+                        TextBox h = new TextBox();
+                        h.Text = textBox.Text;
+                        h.Name = textBox.Name;
+                        fM.Add(h);
+                    }
+                }
+                foreach (var textBox in sF)
+                {
+                    if (textBox.Text.StartsWith("-"))
+                        continue;
+                    bool founded = false;
+                    foreach (var box in fF)
+                    {
+                        if (box.Text.Contains(textBox.Text.Replace(textBox.Text.Substring(0, 1), "")))
+                        {
+                            box.Name = textBox.Name;
+                            founded = true;
+                            break;
+                        }
+
+                    }
+
+                    if (!founded)
+                    {
+                        TextBox h = new TextBox();
+                        h.Text = textBox.Text;
+                        h.Name = textBox.Name;
+                        fF.Add(h);
+                    }
+                }
+                fb.updateGUI();
+            }
+
+        }
+
     }
 }

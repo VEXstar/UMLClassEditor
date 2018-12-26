@@ -54,6 +54,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Interfaces\EventBridge.cs" />
     <Compile Include="Utils\moveStruct.cs" />
     <Compile Include="Utils\Storage.cs" />
     <Page Include="MainWindow.xaml">

@@ -5,7 +5,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using Microsoft.Win32;
 using UMLClassEditor.Interfaces;
 
 namespace UMLClassEditor.DrawElements.Blocks
@@ -17,10 +16,15 @@ namespace UMLClassEditor.DrawElements.Blocks
        {
            Class,Interface
        }
+        public enum NotifyType
+        {
+            Move,Delete,Change,AddF,AddM,DeleteL
+        }
         private BoxType  type;
         private TextBox className;
         private List<TextBox> fields  = new List<TextBox>();
         private List<TextBox> methods = new List<TextBox>();
+        
         Point[] twoStartPoints = new Point[2];
         private Border element;
         private int standartHeight = 18;
@@ -33,16 +37,41 @@ namespace UMLClassEditor.DrawElements.Blocks
             this.type = type;
             this.className.Text = className;
             TextBox text = new TextBox();
-            text.Text = "-field";
-            fields.Add(text);
+            if (type != BoxType.Interface)
+            {
+                text.TextChanged += SOnTextChanged;
+                text.Text = "#field";
+                text.Name = "f" + Guid.NewGuid().ToString().Replace("-", "");
+                fields.Add(text);
+            }
             text = new TextBox();
+            text.TextChanged += SOnTextChanged;
+            text.Name = "f"+Guid.NewGuid().ToString().Replace("-","");
             text.Text = "+void()";
             methods.Add(text);
 
+            
             element = new Border();
             Canvas.SetTop(element, st.Y);
             Canvas.SetLeft(element, st.X);
             generateBorder(element);
+
+        }
+
+        public void initMenu(EventBridge bridge)
+        {
+            ContextMenu menu = new ContextMenu();
+            MenuItem item = new MenuItem();
+            item.Header = "Создать потомка";
+            item.Name = "f" + guid.Replace("-","_");
+            item.Click += bridge.ContextMenuAddChild;
+            menu.Items.Add(item);
+            item = new MenuItem();
+            item.Name = "f" + guid.Replace("-", "_");
+            item.Header = "Добавить предка";
+            item.Click += bridge.ContextMenuAddParent;
+            menu.Items.Add(item);
+            element.ContextMenu = menu;
 
         }
 
@@ -62,6 +91,7 @@ namespace UMLClassEditor.DrawElements.Blocks
         public override void removeGraphicFromCanvas(Canvas canvas)
         {
             canvas.Children.Remove(element);
+            NotifyAll(null, NotifyType.Delete);
         }
 
         public override void updateGraphicPoints(Point[] points)
@@ -98,6 +128,7 @@ namespace UMLClassEditor.DrawElements.Blocks
 
             Label label = new Label();
             label.FontSize = 11;
+            label.Cursor = Cursors.Hand;
             label.Height = standartHeight+20;
             label.HorizontalContentAlignment = HorizontalAlignment.Center;
             label.Width = widthset;
@@ -130,7 +161,6 @@ namespace UMLClassEditor.DrawElements.Blocks
                     textBox.Height = standartHeight;
                     textBox.Width = widthset;
                     textBox.KeyUp += TextBoxOnKeyUp;
-                    textBox.Name = "field";
                     textBox.BorderBrush = Brushes.Transparent;
                     textBox.BorderThickness = new Thickness(0);
                     Canvas.SetTop(textBox, drop);
@@ -162,7 +192,6 @@ namespace UMLClassEditor.DrawElements.Blocks
                 textBox.Height = standartHeight;
                 textBox.Width = widthset;
                 textBox.KeyUp += TextBoxOnKeyUp;
-                textBox.Name = "method";
                 textBox.BorderBrush = Brushes.Transparent;
                 textBox.BorderThickness = new Thickness(0);
                 Canvas.SetTop(textBox, drop);
@@ -186,14 +215,15 @@ namespace UMLClassEditor.DrawElements.Blocks
         {
             if (e.Key == Key.Delete&& sender is TextBox)
             {
-                if (((TextBox) sender).Name == "method")
+                if (methods.Contains(((TextBox) sender)))
                 {
-                    methods.Remove((TextBox) sender);
+                    methods.Remove((TextBox)sender);
                 }
                 else
                 {
                     fields.Remove((TextBox)sender);
                 }
+                NotifyAll(sender,NotifyType.DeleteL);
                 generateBorder(element);
             }
         }
@@ -219,18 +249,22 @@ namespace UMLClassEditor.DrawElements.Blocks
         private void NewMethodButtonOnClick(object sender, RoutedEventArgs e)
         {
             TextBox text = new TextBox();
-            text.Text = "+void()";
+            text.Text = "+void"+methods.Count+"()";
+            text.Name = "f" + Guid.NewGuid().ToString().Replace("-", "");
             methods.Add(text);
             generateBorder(element);
+            NotifyAll(text, NotifyType.AddM);
         }
 
         private void NewFieldsBtnOnClick(object sender, RoutedEventArgs e)
         {
             TextBox text = new TextBox();
-            text.Text = "-field";
+            text.Text = "#field"+fields.Count;
+            text.Name = "f" + Guid.NewGuid().ToString().Replace("-", "");
             fields.Add(text);
             generateBorder(element);
-           
+            
+            NotifyAll(text, NotifyType.AddF);
         }
 
         public override void move(Point point, Canvas canvas)
@@ -241,7 +275,7 @@ namespace UMLClassEditor.DrawElements.Blocks
             sMoveStruct.offset = point;
             sMoveStruct.WorkCanvas = canvas;
             updateStartPoints();
-            NotifyAll(sMoveStruct);
+            NotifyAll(sMoveStruct,NotifyType.Move);
         }
 
         public override bool canPick(Point point)
@@ -255,6 +289,11 @@ namespace UMLClassEditor.DrawElements.Blocks
         public override string getGuid()
         {
             return guid;
+        }
+
+        public override void updateGUI()
+        {
+            generateBorder(element);
         }
 
         List<IObserver> observers = new List<IObserver>();
@@ -273,12 +312,20 @@ namespace UMLClassEditor.DrawElements.Blocks
             observers.Clear();
         }
 
+        public List<TextBox> getMethodsList()
+        {
+            return methods;
+        }
+        public List<TextBox> getFieldsList()
+        {
+            return fields;
+        }
 
-        public void NotifyAll(object e)
+        public void NotifyAll(object e,object type)
         {
             foreach (var observer in observers)
             {
-               observer.onEvent(this,e);
+               observer.onEvent(this,e,type);
             }
         }
 
@@ -293,12 +340,14 @@ namespace UMLClassEditor.DrawElements.Blocks
             int i = 0;
             foreach (var textBox in fields)
             {
-                info.AddValue("field"+(i++),textBox.Text,typeof(string));
+                info.AddValue("field"+(i),textBox.Text,typeof(string));
+                info.AddValue("fieldG"+(i++),textBox.Name,typeof(string));
             }
              i = 0;
             foreach (var textBox in methods)
             {
-                info.AddValue("method" + (i++), textBox.Text, typeof(string));
+                info.AddValue("method" + (i), textBox.Text, typeof(string));
+                info.AddValue("methodG" + (i++), textBox.Name, typeof(string));
             }
         }
         public UMLClassBox(SerializationInfo info, StreamingContext context)
@@ -307,12 +356,16 @@ namespace UMLClassEditor.DrawElements.Blocks
             {
                 TextBox s = new TextBox();
                 s.Text = (string)info.GetValue("field" + i,typeof(string));
+                s.Name = (string)info.GetValue("fieldG" + i, typeof(string));
+                s.TextChanged += SOnTextChanged;
                 fields.Add(s);
             }
             for (int i = 0; i < (int)info.GetValue("methodCount", typeof(int)); i++)
             {
                 TextBox s = new TextBox();
                 s.Text = (string)info.GetValue("method" + i, typeof(string));
+                s.Name = (string)info.GetValue("methodG" + i, typeof(string));
+                s.TextChanged += SOnTextChanged;
                 methods.Add(s);
             }
             type =(BoxType)info.GetValue("BoxType",typeof(BoxType));
@@ -326,6 +379,16 @@ namespace UMLClassEditor.DrawElements.Blocks
             generateBorder(element);
             twoStartPoints = new[] {new Point(0, 0), new Point(0, 0)};
             updateStartPoints();
+        }
+
+        private void SOnTextChanged(object sender, TextChangedEventArgs e)
+        {
+           NotifyAll(sender,NotifyType.Change);
+        }
+
+        public void imitateEvent(object sender,object type)
+        {
+            NotifyAll(sender,type);
         }
     }
 }

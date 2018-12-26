@@ -14,21 +14,27 @@ namespace UMLClassEditor
         List<T> sList = new List<T>();
 
 
-        public Storage(Stream context)
+        public Storage(Stream context,EventBridge bridge)
         {
             BinaryFormatter formatter = new BinaryFormatter();
             sList = (List<T>) formatter.Deserialize(context);
             foreach (var v in sList)
             {
-                if(!(v is DependencyArrow))
+                if (!(v is DependencyArrow))
+                {
+                    (v as UMLClassBox).initMenu(bridge);
                     continue;
+                }
+                 
                 DependencyArrow arrow = v as DependencyArrow;
                 UMLClassBox f = null;
                 UMLClassBox s = null;
                 foreach (var block in sList)
                 {
-                    if(!(block is UMLClassBox))
+                    if (!(block is UMLClassBox))
+                    {
                         continue;
+                    }
                     if ((block as UMLClassBox).getGuid() == arrow.getFGUID())
                     {
                         f = block as UMLClassBox;

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,14 +10,14 @@ using Microsoft.Win32;
 using UMLClassEditor.DrawElements;
 using UMLClassEditor.DrawElements.Arrows;
 using UMLClassEditor.DrawElements.Blocks;
-using UMLClassEditor.DrawElements.Lines;
-using UMLClassEditor.DrawElements.Tips;
+using UMLClassEditor.Interfaces;
 
 namespace UMLClassEditor {
     /// <summary>
     /// Логика взаимодействия для MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window {
+    public partial class MainWindow : Window,EventBridge
+    {
         public enum State {
             Editing, ClassBox, InterfaceBox, AssotiationArrow, DerivArrow, ImplementationArrow, DependenceArrow, AggregationArrow, CompositionArrow
                 //
@@ -112,11 +111,12 @@ namespace UMLClassEditor {
                drawCanvas.Children.Remove(rectangle);
                now = new Point(now.X - rectangle.Width / 2, now.Y - rectangle.Height / 2);
                UMLClassBox box = new UMLClassBox("SomeClass",(picked==State.ClassBox)? UMLClassBox.BoxType.Class: UMLClassBox.BoxType.Interface,now);
+               box.initMenu(this);
                box.draw(drawCanvas);
                 elements.Add(box);
                 setMode(State.Editing);
             }
-            else if (picked == State.Editing&&!isMoving&&e.LeftButton == MouseButtonState.Released)
+            else if (picked == State.Editing&&!isMoving&&e.ChangedButton == MouseButton.Left&&e.ChangedButton != MouseButton.Right)
             {
                 UMLElement g = getPickedElement(now);
                 if (g != null)
@@ -273,7 +273,7 @@ namespace UMLClassEditor {
             {
                 elements.Clear(drawCanvas);
                 Stream s = File.Open(dialog.FileName, FileMode.Open);
-                elements = new Storage<UMLElement>(s);
+                elements = new Storage<UMLElement>(s,this);
                 s.Close();
                 foreach (var umlElement in elements)
                 {
@@ -290,6 +290,7 @@ namespace UMLClassEditor {
             {
                 Stream s = File.Open(dialog.FileName, FileMode.Create);
                 elements.save(s);
+                s.Close();
             }
         }
 
@@ -309,6 +310,61 @@ namespace UMLClassEditor {
                     pngImage.Save(fileStream);
                 }
             }
+        }
+
+        public void ContextMenuAddChild(object sender, RoutedEventArgs e)
+        {
+            if(!(sender is MenuItem))
+                return;
+            string guid = ((MenuItem) sender).Name.Substring(1, ((MenuItem) sender).Name.Length - 1).Replace("_", "-");
+            foreach (var umlElement in elements)
+            {
+                if (umlElement is UMLClassBox && ((UMLClassBox) umlElement).getGuid() == guid)
+                {
+                    UMLClassBox f = umlElement as UMLClassBox;
+                    Point s = f.GetCenterPoint();
+                    UMLClassBox n = new UMLClassBox("NewChildClass",UMLClassBox.BoxType.Class,new Point(s.X+160, s.Y));
+                    n.draw(drawCanvas);
+                    n.initMenu(this);
+                    DependencyArrow dependency = new DependencyArrow(n,f,DependencyArrow.Tips.DerivArrow);
+                    dependency.draw(drawCanvas);
+                    elements.Add(n);
+                    elements.Add(dependency);
+                    return;
+                }
+            }
+        }
+        public void ContextMenuAddParent(object sender, RoutedEventArgs e)
+        {
+            if (!(sender is MenuItem))
+                return;
+            string guid = ((MenuItem)sender).Name.Substring(1, ((MenuItem)sender).Name.Length - 1).Replace("_", "-");
+            DependencyArrow link = null;
+            UMLClassBox fblock = null;
+            UMLClassBox sblock = null;
+            foreach (var val in elements)
+            {
+                if (val is DependencyArrow&&(val as DependencyArrow).getFGUID() == guid)
+                {
+                    link = val as DependencyArrow;
+                }
+                else if (val is UMLClassBox && (val as UMLClassBox).getGuid() == guid)
+                {
+                    fblock = val as UMLClassBox;
+                }
+                if(link!=null&&fblock!=null)
+                    break;
+            }
+
+            foreach (var umlElement in elements)
+            {
+                if (umlElement is UMLClassBox && (umlElement as UMLClassBox).getGuid() == link.getSGUID())
+                {
+                    sblock = umlElement as UMLClassBox;
+                    break;
+                }
+            }
+            //TODO: Разорвать связь между предком и нашим блоком, вывести окно с выбором нужных полей и создать новые связи со свдигом
         }
     }
 }

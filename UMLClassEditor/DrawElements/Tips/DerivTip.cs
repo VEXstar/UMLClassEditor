@@ -24,7 +24,7 @@ namespace UMLClassEditor.DrawElements.Tips
             Point TipBegin;
             PointCollection pointCollection = new PointCollection();
             TipEnd = point2;
-            if (t == Turns.Left) {
+            if (t == Turns.Right) {
                 Tip1 = new Point(point2.X - 10, point2.Y - 10);
                 Tip2 = new Point(point2.X - 10, point2.Y + 10);
                 TipBegin = new Point(point2.X - 10, point2.Y);

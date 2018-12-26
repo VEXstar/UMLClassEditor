@@ -45,6 +45,7 @@ namespace UMLClassEditor {
             if (e.Key == Key.Delete)
             {
                 List<UMLElement> s = new List<UMLElement>();
+                List<UMLElement> d = new List<UMLElement>();
                 foreach (var umlElement in elements)
                 {
                     if (umlElement.getPicked())
@@ -53,6 +54,33 @@ namespace UMLClassEditor {
                         umlElement.removeGraphicFromCanvas(drawCanvas);
                     }
                 }
+
+                foreach (var umlElement in s)
+                {
+                    if (!(umlElement is UMLClassBox))
+                        continue;
+                    foreach (var element in elements)
+                    {
+                        if(!(element is DependencyArrow))
+                            continue;
+                        if ((element as DependencyArrow).getFGUID() == (umlElement as UMLClassBox).getGuid() ||
+                            (element as DependencyArrow).getSGUID() == (umlElement as UMLClassBox).getGuid())
+                        {
+                            d.Add(element);
+                            element.removeGraphicFromCanvas(drawCanvas);
+                            if(!(element is IObserver))
+                                continue;
+                            foreach (var elem in elements)
+                            {
+                                if (elem is IObservable)
+                                {
+                                    (elem as IObservable).removeObserver((IObserver)element);
+                                }
+                            }
+                        }
+                    }
+                }
+                s.AddRange(d);
                 foreach (var umlElement in s)
                 {
                     elements.Remove(umlElement);

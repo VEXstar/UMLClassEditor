@@ -271,15 +271,10 @@ namespace UMLClassEditor.DrawElements.Arrows
                 }
                 if (todelet != null)
                 {
-                    fb.getFieldsList().Remove(todelet);
+                    fb.getMethodsList().Remove(todelet);
                     fb.imitateEvent(todelet, type);
                     fb.updateGUI();
                 }
-            }
-            else if (sender is UMLClassBox &&
-                     ((UMLClassBox.NotifyType) type) == UMLClassBox.NotifyType.Delete)
-            {
-                //TODO: самовыпиливание из хранилища
             }
         }
 

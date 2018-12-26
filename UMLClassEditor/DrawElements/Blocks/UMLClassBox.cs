@@ -91,7 +91,7 @@ namespace UMLClassEditor.DrawElements.Blocks
         public override void removeGraphicFromCanvas(Canvas canvas)
         {
             canvas.Children.Remove(element);
-            NotifyAll(null, NotifyType.Delete);
+            removeAllObservers();
         }
 
         public override void updateGraphicPoints(Point[] points)

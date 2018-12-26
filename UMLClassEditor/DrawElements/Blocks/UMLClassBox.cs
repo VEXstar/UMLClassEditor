@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -9,21 +10,25 @@ using UMLClassEditor.Interfaces;
 
 namespace UMLClassEditor.DrawElements.Blocks
 {
-    public class UMLClassBox:UMLElement,IObservable
+    [Serializable()]
+    public class UMLClassBox:UMLElement,IObservable, ISerializable
     {
-       
-        private int  type;
+       public enum BoxType
+       {
+           Class,Interface
+       }
+        private BoxType  type;
         private TextBox className;
         private List<TextBox> fields  = new List<TextBox>();
         private List<TextBox> methods = new List<TextBox>();
         Point[] twoStartPoints = new Point[2];
-        public const int TYPE_CLASS = 1;
-        public const int TYPE_INTERAFCE = 2;
         private Border element;
         private int standartHeight = 18;
+        private string guid;
 
-        public UMLClassBox(int type,string className,Point st)
+        public UMLClassBox(string className,BoxType type,Point st)
         {
+            guid = Guid.NewGuid().ToString();
             this.className = new TextBox();
             this.type = type;
             this.className.Text = className;
@@ -50,8 +55,18 @@ namespace UMLClassEditor.DrawElements.Blocks
             }
             else
             {
-                element.BorderBrush = (type == TYPE_CLASS) ? Brushes.Black : Brushes.Blue;
+                element.BorderBrush = (type == BoxType.Class) ? Brushes.Black : Brushes.Blue;
             }
+        }
+
+        public override void removeGraphicFromCanvas(Canvas canvas)
+        {
+            canvas.Children.Remove(element);
+        }
+
+        public override void updateGraphicPoints(Point[] points)
+        {
+            throw new NotImplementedException();
         }
 
         public override void draw(Canvas canvas)
@@ -59,14 +74,6 @@ namespace UMLClassEditor.DrawElements.Blocks
             canvas.Children.Remove(element);
             canvas.Children.Add(element);
             
-        }
-
-        public override void deleteFrom(Canvas canvas)
-        {
-            canvas.Children.Remove(element);
-            // NotifyAll(canvas);
-            NotifyAboutDelete();
-            removeAll();
         }
 
         public UIElement getGraph()
@@ -80,7 +87,7 @@ namespace UMLClassEditor.DrawElements.Blocks
             border.Child = null;
             Canvas canvas = new Canvas();
             border.BorderThickness = new Thickness(2);
-            border.BorderBrush = (type == TYPE_CLASS) ? Brushes.Black : Brushes.Blue;
+            border.BorderBrush = (type == BoxType.Class) ? Brushes.Black : Brushes.Blue;
             border.Width = 180;
             border.Height = 134;
 
@@ -94,7 +101,7 @@ namespace UMLClassEditor.DrawElements.Blocks
             label.Height = standartHeight+20;
             label.HorizontalContentAlignment = HorizontalAlignment.Center;
             label.Width = widthset;
-            label.Content = String.Format("<<{0}>>", (type == TYPE_CLASS) ? "class" : "interface");
+            label.Content = String.Format("<<{0}>>", (type == BoxType.Class) ? "class" : "interface");
             Canvas.SetTop(label,0);
             canvas.Children.Add(label);
 
@@ -108,40 +115,40 @@ namespace UMLClassEditor.DrawElements.Blocks
             Canvas.SetTop(className,drop);
             canvas.Children.Add(className);
             drop += standartHeight;
-
-
-
             Separator s = new Separator();
-            s.Height = 5;
-            s.Width = widthset;
-            s.BorderBrush = Brushes.Black;
-            Canvas.SetTop(s, drop);
-            canvas.Children.Add(s);
-            drop += (int)s.Height;
-
-            foreach (var textBox in fields)
+            if (type == BoxType.Class)
             {
-                textBox.Height = standartHeight;
-                textBox.Width = widthset;
-                textBox.KeyUp += TextBoxOnKeyUp;
-                textBox.Name = "field";
-                textBox.BorderBrush = Brushes.Transparent;
-                textBox.BorderThickness = new Thickness(0);
-                Canvas.SetTop(textBox, drop);
-                drop += standartHeight;
-                canvas.Children.Add(textBox);
-            }
-            Button newFieldsBtn = new Button();
+                s.Height = 5;
+                s.Width = widthset;
+                s.BorderBrush = Brushes.Black;
+                Canvas.SetTop(s, drop);
+                canvas.Children.Add(s);
+                drop += (int)s.Height;
 
-            newFieldsBtn.Content = "+";
-            newFieldsBtn.Height = standartHeight;
-            newFieldsBtn.Width = widthset;
-            newFieldsBtn.BorderBrush = Brushes.Transparent;
-            newFieldsBtn.BorderThickness = new Thickness(0);
-            newFieldsBtn.Click += NewFieldsBtnOnClick;
-            Canvas.SetTop(newFieldsBtn, drop);
-            canvas.Children.Add(newFieldsBtn);
-            drop += standartHeight;
+                foreach (var textBox in fields)
+                {
+                    textBox.Height = standartHeight;
+                    textBox.Width = widthset;
+                    textBox.KeyUp += TextBoxOnKeyUp;
+                    textBox.Name = "field";
+                    textBox.BorderBrush = Brushes.Transparent;
+                    textBox.BorderThickness = new Thickness(0);
+                    Canvas.SetTop(textBox, drop);
+                    drop += standartHeight;
+                    canvas.Children.Add(textBox);
+                }
+                Button newFieldsBtn = new Button();
+
+                newFieldsBtn.Content = "+";
+                newFieldsBtn.Height = standartHeight;
+                newFieldsBtn.Width = widthset;
+                newFieldsBtn.BorderBrush = Brushes.Transparent;
+                newFieldsBtn.BorderThickness = new Thickness(0);
+                newFieldsBtn.Click += NewFieldsBtnOnClick;
+                Canvas.SetTop(newFieldsBtn, drop);
+                canvas.Children.Add(newFieldsBtn);
+                drop += standartHeight;
+            }
 
             s = new Separator();
             s.Height = 6;
@@ -226,22 +233,15 @@ namespace UMLClassEditor.DrawElements.Blocks
            
         }
 
-        Point last = new Point(-666,-666);
-        public override void move(Point point)
+        public override void move(Point point, Canvas canvas)
         {
-            if (last.X == -666 && last.Y == -666)
-            {
-                last = point;
-                return;
-                
-            }
-                
-            Canvas.SetTop(element, Canvas.GetTop(element) + point.Y - last.Y );
-            Canvas.SetLeft(element, Canvas.GetLeft(element) +point.X - last.X);
-
-            NotifyAll(new Point(point.X - last.X, point.Y - last.Y));
-            last = point;
+            Canvas.SetTop(element,Canvas.GetTop(element)+point.Y);
+            Canvas.SetLeft(element,Canvas.GetLeft(element)+point.X);
+            moveStruct sMoveStruct = new moveStruct();
+            sMoveStruct.offset = point;
+            sMoveStruct.WorkCanvas = canvas;
             updateStartPoints();
+            NotifyAll(sMoveStruct);
         }
 
         public override bool canPick(Point point)
@@ -252,9 +252,9 @@ namespace UMLClassEditor.DrawElements.Blocks
                    (top + 40 > point.Y);
         }
 
-        public override void update(Canvas canvas)
+        public override string getGuid()
         {
-            
+            return guid;
         }
 
         List<IObserver> observers = new List<IObserver>();
@@ -268,23 +268,64 @@ namespace UMLClassEditor.DrawElements.Blocks
             observers.Remove(observer);
         }
 
-        public void removeAll()
+        public void removeAllObservers()
         {
             observers.Clear();
         }
+
 
         public void NotifyAll(object e)
         {
             foreach (var observer in observers)
             {
-               observer.onEvent(e);
+               observer.onEvent(this,e);
             }
         }
 
-        public void NotifyAboutDelete() {
-            foreach (var observer in observers) {
-                observer.UpdateForDelete();
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("fieldsCount",fields.Count,typeof(int));
+            info.AddValue("methodCount",methods.Count,typeof(int));
+            info.AddValue("className", className.Text,typeof(string));
+            info.AddValue("guid", guid,typeof(string));
+            info.AddValue("BoxType", type,typeof(BoxType));
+            info.AddValue("pos",new Point(Canvas.GetTop(element), Canvas.GetLeft(element)),typeof(Point));
+            int i = 0;
+            foreach (var textBox in fields)
+            {
+                info.AddValue("field"+(i++),textBox.Text,typeof(string));
             }
+             i = 0;
+            foreach (var textBox in methods)
+            {
+                info.AddValue("method" + (i++), textBox.Text, typeof(string));
+            }
+        }
+        public UMLClassBox(SerializationInfo info, StreamingContext context)
+        {
+            for (int i = 0; i < (int) info.GetValue("fieldsCount", typeof(int)); i++)
+            {
+                TextBox s = new TextBox();
+                s.Text = (string)info.GetValue("field" + i,typeof(string));
+                fields.Add(s);
+            }
+            for (int i = 0; i < (int)info.GetValue("methodCount", typeof(int)); i++)
+            {
+                TextBox s = new TextBox();
+                s.Text = (string)info.GetValue("method" + i, typeof(string));
+                methods.Add(s);
+            }
+            type =(BoxType)info.GetValue("BoxType",typeof(BoxType));
+            className = new TextBox();
+            className.Text = (string)info.GetValue("className", typeof(string));
+            element = new Border();
+            Point st = (Point) info.GetValue("pos", typeof(Point));
+            guid = (string)info.GetValue("guid", typeof(string));
+            Canvas.SetTop(element,st.X);
+            Canvas.SetLeft(element,st.Y);
+            generateBorder(element);
+            twoStartPoints = new[] {new Point(0, 0), new Point(0, 0)};
+            updateStartPoints();
         }
     }
 }

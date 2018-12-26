@@ -2,7 +2,6 @@
 {
     public interface IObserver
     {
-        void onEvent(object e);
-        void UpdateForDelete();
+        void onEvent(object sender,object e);
     }
 }

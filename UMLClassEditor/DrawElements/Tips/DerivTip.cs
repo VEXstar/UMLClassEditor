@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -11,19 +12,19 @@ using UMLClassEditor.Interfaces;
 
 namespace UMLClassEditor.DrawElements.Tips
 {
-    class DerivTip: Tip, IObserver
+    [Serializable()]
+    class DerivTip: Tip
     {
-        Point Tip1;
-        Point Tip2;
-        Point TipEnd;
-        Point TipBegin;
-        Polyline polyline = new Polyline();
-        Point TipTale;
-        PointCollection pointCollection = new PointCollection();
 
-        public DerivTip(Point point2, string str) {
+        public DerivTip(Point point2, Turns t)
+        {
+            Point Tip1;
+            Point Tip2;
+            Point TipEnd;
+            Point TipBegin;
+            PointCollection pointCollection = new PointCollection();
             TipEnd = point2;
-            if (str == "l") {
+            if (t == Turns.Left) {
                 Tip1 = new Point(point2.X - 10, point2.Y - 10);
                 Tip2 = new Point(point2.X - 10, point2.Y + 10);
                 TipBegin = new Point(point2.X - 10, point2.Y);
@@ -57,20 +58,55 @@ namespace UMLClassEditor.DrawElements.Tips
             return  TipTale;
         }
 
-        Point r = new Point(-666, -666);
-        public override void onEvent(object e)
+        public override void removeGraphicFromCanvas(Canvas canvas)
         {
-            if (e is Point s)
+            canvas.Children.Remove(polyline);
+        }
+
+        public override void updateGraphicPoints(Point[] points)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void draw(Canvas canvas)
+        {
+            canvas.Children.Add(polyline);
+        }
+
+        private Point? last;
+        public override void move(Point offset,Canvas canvas)
+        {
+            if (!last.HasValue)
             {
-                if (r.Y == -666)
-                    r = s;
-                Matrix m = new Matrix();
-                m.Translate(r.X, r.Y);
-                r = new Point(r.X + s.X, r.Y + s.Y);
-                MatrixTransform t = new MatrixTransform(m);
-                polyline.RenderTransform = t;
-                TipTale = new Point(TipTale.X + s.X, TipTale.Y + s.Y);
+                last = offset;
+                return;
             }
+           last = new Point(last.Value.X + offset.X, last.Value.Y + offset.Y);
+           Matrix m = new Matrix();
+           m.Translate(last.Value.X,last.Value.Y);
+           polyline.RenderTransform = new MatrixTransform(m);
+        }
+
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("pointCount", polyline.Points.Count, typeof(int));
+            info.AddValue("Tale", TipTale, typeof(Point));
+            int i = 0;
+            foreach (var el in polyline.Points)
+            {
+                info.AddValue("point" + (i++), el, typeof(Point));
+            }
+        }
+
+        public DerivTip(SerializationInfo info, StreamingContext context)
+        {
+            for (int i = 0; i < (int)info.GetValue("pointCount", typeof(int)); i++)
+            {
+                Point s = (Point)info.GetValue("point" + i, typeof(Point));
+                polyline.Points.Add(s);
+            }
+
+            TipTale = (Point) info.GetValue("Tale", typeof(Point));
         }
     }
 }

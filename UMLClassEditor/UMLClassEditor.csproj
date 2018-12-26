@@ -54,6 +54,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Utils\moveStruct.cs" />
+    <Compile Include="Utils\Storage.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -62,15 +64,16 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DrawElements\Arrows\Arrow.cs" />
-    <Compile Include="DrawElements\Arrows\LineCompanator.cs" />
-    <Compile Include="DrawElements\Lines\Lines.cs" />
+    <Compile Include="DrawElements\Arrows\DependencyArrow.cs" />
+    <Compile Include="DrawElements\Lines\BetweenLine.cs" />
     <Compile Include="DrawElements\Blocks\UMLClassBox.cs" />
     <Compile Include="DrawElements\Tips\AggregationTip.cs" />
     <Compile Include="DrawElements\Tips\AssotiationTip.cs" />
     <Compile Include="DrawElements\Tips\DerivTip.cs" />
     <Compile Include="DrawElements\Tips\Tip.cs" />
     <Compile Include="DrawElements\UMLElement.cs" />
+    <Compile Include="Interfaces\IDrawable.cs" />
+    <Compile Include="Interfaces\IMovable.cs" />
     <Compile Include="Interfaces\IObservable.cs" />
     <Compile Include="Interfaces\IObserver.cs" />
     <Compile Include="MainWindow.xaml.cs">

@@ -75,6 +75,10 @@ namespace UMLClassEditor.DrawElements.Blocks
 
         }
 
+        public BoxType getType()
+        {
+            return type;
+        }
         public override void setPicked(bool set)
         {
             isPicked = set;

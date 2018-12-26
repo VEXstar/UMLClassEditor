@@ -354,7 +354,7 @@ namespace UMLClassEditor {
                     UMLClassBox n = new UMLClassBox("NewChildClass",UMLClassBox.BoxType.Class,new Point(s.X+160, s.Y));
                     n.draw(drawCanvas);
                     n.initMenu(this);
-                    DependencyArrow dependency = new DependencyArrow(n,f,DependencyArrow.Tips.DerivArrow);
+                    DependencyArrow dependency = new DependencyArrow(n,f,(f.getType() == UMLClassBox.BoxType.Class)? DependencyArrow.Tips.DerivArrow: DependencyArrow.Tips.ImplementationArrow);
                     dependency.draw(drawCanvas);
                     elements.Add(n);
                     elements.Add(dependency);
@@ -392,7 +392,7 @@ namespace UMLClassEditor {
                     break;
                 }
             }
-            //TODO: Разорвать связь между предком и нашим блоком, вывести окно с выбором нужных полей и создать новые связи со свдигом
+            //TODO: Разорвать связь между предком и нашим блоком, вывести окно с выбором нужных полей (два листа с множественным выбором или чекбокс лист хз) и создать новые связи со свдигом
         }
     }
 }

@@ -205,14 +205,12 @@ namespace UMLClassEditor.DrawElements.Arrows
                 {
                     if (textBox.Name != h.Name) continue;
                     textBox.Text = h.Text;
-                  //  fb.updateGUI();
                     return;
                 }
                 foreach (var textBox in fb.getMethodsList())
                 {
                     if (textBox.Name != h.Name) continue;
                     textBox.Text = h.Text;
-                  //  fb.updateGUI();
                     return;
                 }
             }
@@ -220,17 +218,39 @@ namespace UMLClassEditor.DrawElements.Arrows
                      ((UMLClassBox.NotifyType) type) == UMLClassBox.NotifyType.AddM)
             {
                 TextBox h = e as TextBox;
+                foreach (var val in fb.getMethodsList())
+                {
+                    if (val.Text == h.Text)
+                    {
+                        val.Name = h.Name;
+                        fb.imitateEvent(val, type);
+                        fb.updateGUI();
+                        return;
+                    }
+
+                }
                 TextBox n = new TextBox();
                 n.Name = h.Name;
                 n.Text = h.Text;
                 fb.getMethodsList().Add(n);
-                fb.imitateEvent(n,type);
+                fb.imitateEvent(n, type);
                 fb.updateGUI();
             }
             else if (sender is UMLClassBox && ((UMLClassBox)sender) == sb &&
                      ((UMLClassBox.NotifyType)type) == UMLClassBox.NotifyType.AddF)
             {
                 TextBox h = e as TextBox;
+                foreach (var val in fb.getFieldsList())
+                {
+                    if (val.Text == h.Text)
+                    {
+                        val.Name = h.Name;
+                        fb.imitateEvent(val, type);
+                        fb.updateGUI();
+                        return;
+                    }
+
+                }
                 TextBox n = new TextBox();
                 n.Name = h.Name;
                 n.Text = h.Text;

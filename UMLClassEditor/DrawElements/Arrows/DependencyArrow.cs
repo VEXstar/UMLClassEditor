@@ -259,9 +259,9 @@ namespace UMLClassEditor.DrawElements.Arrows
                 n.Text = h.Name.Text;
                 n.Name = c.Name = h.GUID;
                 c.Text = h.Type.Text;
-                
-                fb.getMethodsList().Add(new UMLBlockLine(){GUID = h.GUID, Type = c,Name = n});
-                fb.imitateEvent(n, type);
+                UMLBlockLine sf = new UMLBlockLine() {GUID = h.GUID, Type = c, Name = n};
+                fb.getMethodsList().Add(sf);
+                fb.imitateEvent(sf, type);
                 fb.updateGUI();
             }
             else if (sender is UMLClassBox && ((UMLClassBox)sender) == sb &&
@@ -286,9 +286,9 @@ namespace UMLClassEditor.DrawElements.Arrows
                 c.ItemsSource = h.Type.ItemsSource;
                 n.Name = c.Name = h.GUID;
                 c.Text = h.Type.Text;
-
-                fb.getFieldsList().Add(new UMLBlockLine() { GUID = h.GUID, Type = c, Name = n });
-                fb.imitateEvent(n, type);
+                UMLBlockLine sf = new UMLBlockLine() { GUID = h.GUID, Type = c, Name = n };
+                fb.getFieldsList().Add(sf);
+                fb.imitateEvent(sf, type);
                 fb.updateGUI();
             }
             else if (sender is UMLClassBox && ((UMLClassBox)sender) == sb &&

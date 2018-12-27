@@ -50,10 +50,28 @@ namespace UMLClassEditor.DrawElements.Arrows
                     r = new BetweenLine(getPointForFirstBLock(), t.GetEndPointForLine(), BetweenLine.Type.Dotted);
                     break;
             }
-
+            updateEvents();
             fieldsSync();
             fb.addObserver(this);
             sb.addObserver(this);
+        }
+
+        private void updateEvents()
+        {
+            t.GetPolyline().MouseUp -= OnMouseUp;
+            r.GetPolyline().MouseUp -= OnMouseUp;
+
+            t.GetPolyline().MouseUp += OnMouseUp;
+            r.GetPolyline().MouseUp += OnMouseUp;
+        }
+
+        private void OnMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Released && e.ChangedButton == MouseButton.Left)
+            {
+                setPicked(!isPicked);
+            }
+ 
         }
 
         private Point getPointForFirstBLock()
@@ -98,6 +116,9 @@ namespace UMLClassEditor.DrawElements.Arrows
 
         public override void setPicked(bool set)
         {
+            Brush toset = (set) ? Brushes.Red : Brushes.Black;
+            r.GetPolyline().Stroke = toset;
+            t.GetPolyline().Stroke = toset;
             isPicked = set;
         }
 
@@ -105,6 +126,8 @@ namespace UMLClassEditor.DrawElements.Arrows
         {
             t.removeGraphicFromCanvas(canvas);
             r.removeGraphicFromCanvas(canvas);
+            fb.removeObserver(this);
+            sb.removeObserver(this);
         }
 
         public override void updateGraphicPoints(Point[] points)
@@ -124,6 +147,7 @@ namespace UMLClassEditor.DrawElements.Arrows
             t = generateTip(mode);
             t.draw(canvas);
             r.updateGraphicPoints(new Point[]{t.GetEndPointForLine(),getPointForFirstBLock()});
+            updateEvents();
         }
 
         public override bool canPick(Point point)
@@ -187,9 +211,11 @@ namespace UMLClassEditor.DrawElements.Arrows
                     r = new BetweenLine(getPointForFirstBLock(), t.GetEndPointForLine(), BetweenLine.Type.Dotted);
                     break;
             }
+            
             fieldsSync();
             fb.addObserver(this);
             sb.addObserver(this);
+            updateEvents();
         }
 
         public Tips GetTip()

@@ -29,6 +29,7 @@ namespace UMLClassEditor.DrawElements.Lines {
                 coll.Add(2);
                 polyline.StrokeDashArray = coll;
             }
+            polyline.StrokeThickness = 3;
         }
         public Polyline GetPolyline() {
             return polyline;

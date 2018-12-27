@@ -46,6 +46,7 @@ namespace UMLClassEditor.DrawElements.Tips
             polyline.Points = pointCollection;
             polyline.Stroke = Brushes.Black;
             polyline.Fill = Brushes.White;
+            polyline.StrokeThickness = 3;
         }
 
         public override Polyline GetPolyline()

@@ -38,7 +38,13 @@ namespace UMLClassEditor {
             rectangle.Fill = Brushes.Transparent;
             rectangle.Height = 134;
             generateClassesList();
+            this.Loaded+= OnLoaded;
 
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            Application.Current.MainWindow.WindowState = WindowState.Maximized;
         }
 
         public void generateClassesList()
@@ -78,33 +84,24 @@ namespace UMLClassEditor {
 
                 foreach (var umlElement in s)
                 {
-                    if (!(umlElement is UMLClassBox))
-                        continue;
-                    foreach (var element in elements)
+                    if (umlElement is UMLClassBox f)
                     {
-                        if(!(element is DependencyArrow))
-                            continue;
-                        if ((element as DependencyArrow).getFGUID() == (umlElement as UMLClassBox).getGuid() ||
-                            (element as DependencyArrow).getSGUID() == (umlElement as UMLClassBox).getGuid())
+                        foreach (var element in elements)
                         {
-                            d.Add(element);
-                            element.removeGraphicFromCanvas(drawCanvas);
-                            if(!(element is IObserver))
-                                continue;
-                            foreach (var elem in elements)
+                            if (element is DependencyArrow arr)
                             {
-                                if (elem is IObservable)
-                                {
-                                    (elem as IObservable).removeObserver((IObserver)element);
-                                }
+                                if (arr.getSGUID() == f.getGuid()|| arr.getFGUID() == f.getGuid())
+                                    d.Add(arr);
                             }
                         }
                     }
+                     
                 }
                 s.AddRange(d);
                 foreach (var umlElement in s)
                 {
                     elements.Remove(umlElement);
+                    umlElement.removeGraphicFromCanvas(drawCanvas);
                 }
             }
         }

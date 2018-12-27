@@ -45,6 +45,7 @@ namespace UMLClassEditor.DrawElements.Tips
                 pointCollection.Add(TipBegin);
                 pointCollection.Add(Tip1);
             }
+            polyline.StrokeThickness = 3;
             polyline.Points = pointCollection;
             polyline.Stroke = Brushes.Black;
             polyline.Fill = color;

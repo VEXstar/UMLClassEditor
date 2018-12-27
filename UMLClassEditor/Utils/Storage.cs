@@ -14,7 +14,7 @@ namespace UMLClassEditor
         List<T> sList = new List<T>();
 
 
-        public Storage(Stream context,EventBridge bridge)
+        public Storage(Stream context,EventBridge bridge,List<string> classes)
         {
             BinaryFormatter formatter = new BinaryFormatter();
             sList = (List<T>) formatter.Deserialize(context);
@@ -23,6 +23,7 @@ namespace UMLClassEditor
                 if (!(v is DependencyArrow))
                 {
                     (v as UMLClassBox).initMenu(bridge);
+                    (v as UMLClassBox).beforeLoadSets(classes);
                     continue;
                 }
                  

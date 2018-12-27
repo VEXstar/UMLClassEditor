@@ -192,6 +192,10 @@ namespace UMLClassEditor.DrawElements.Arrows
             sb.addObserver(this);
         }
 
+        public Tips GetTip()
+        {
+            return mode;
+        }
         public void onEvent(object sender, object e, object type)
         {
             if (sender is UMLClassBox && e is moveStruct point&&((UMLClassBox.NotifyType)type) == UMLClassBox.NotifyType.Move)
@@ -201,28 +205,48 @@ namespace UMLClassEditor.DrawElements.Arrows
             else if (sender is UMLClassBox&&((UMLClassBox)sender) == sb && ((UMLClassBox.NotifyType) type) == UMLClassBox.NotifyType.Change)
             {
                 TextBox h = e as TextBox;
+                if (h == null)
+                {
+                   ComboBox h1 = e as ComboBox;
+                    foreach (var textBox in fb.getFieldsList())
+                    {
+                        if (textBox.GUID != h1.Name) continue;
+                        textBox.Type.ItemsSource = h1.ItemsSource;
+                        textBox.Type.SelectedItem = h1.SelectedItem;
+                        return;
+                    }
+                    foreach (var textBox in fb.getMethodsList())
+                    {
+                        if (textBox.GUID != h1.Name) continue;
+                        textBox.Type.ItemsSource = h1.ItemsSource;
+                        textBox.Type.SelectedItem = h1.SelectedItem;
+                        return;
+                    }
+
+                }
                 foreach (var textBox in fb.getFieldsList())
                 {
-                    if (textBox.Name != h.Name) continue;
-                    textBox.Text = h.Text;
+                    if (textBox.GUID != h.Name) continue;
+                    textBox.Name.Text = h.Text;
                     return;
                 }
                 foreach (var textBox in fb.getMethodsList())
                 {
-                    if (textBox.Name != h.Name) continue;
-                    textBox.Text = h.Text;
+                    if (textBox.GUID != h.Name) continue;
+                    textBox.Name.Text = h.Text;
                     return;
                 }
             }
             else if (sender is UMLClassBox && ((UMLClassBox) sender) == sb &&
                      ((UMLClassBox.NotifyType) type) == UMLClassBox.NotifyType.AddM)
             {
-                TextBox h = e as TextBox;
+                UMLBlockLine h = e as UMLBlockLine;
                 foreach (var val in fb.getMethodsList())
                 {
-                    if (val.Text == h.Text)
+                    if (val.Name.Text == h.Name.Text)
                     {
-                        val.Name = h.Name;
+                        val.GUID = h.GUID;
+                        val.Name.Name = val.Type.Name = h.GUID;
                         fb.imitateEvent(val, type);
                         fb.updateGUI();
                         return;
@@ -230,21 +254,26 @@ namespace UMLClassEditor.DrawElements.Arrows
 
                 }
                 TextBox n = new TextBox();
-                n.Name = h.Name;
-                n.Text = h.Text;
-                fb.getMethodsList().Add(n);
+                ComboBox c = new ComboBox();
+                c.ItemsSource = h.Type.ItemsSource;
+                n.Text = h.Name.Text;
+                n.Name = c.Name = h.GUID;
+                c.Text = h.Type.Text;
+                
+                fb.getMethodsList().Add(new UMLBlockLine(){GUID = h.GUID, Type = c,Name = n});
                 fb.imitateEvent(n, type);
                 fb.updateGUI();
             }
             else if (sender is UMLClassBox && ((UMLClassBox)sender) == sb &&
                      ((UMLClassBox.NotifyType)type) == UMLClassBox.NotifyType.AddF)
             {
-                TextBox h = e as TextBox;
+                UMLBlockLine h = e as UMLBlockLine;
                 foreach (var val in fb.getFieldsList())
                 {
-                    if (val.Text == h.Text)
+                    if (val.Name.Text == h.Name.Text)
                     {
-                        val.Name = h.Name;
+                        val.GUID = h.GUID;
+                        val.Name.Name = val.Type.Name = h.GUID;
                         fb.imitateEvent(val, type);
                         fb.updateGUI();
                         return;
@@ -252,9 +281,13 @@ namespace UMLClassEditor.DrawElements.Arrows
 
                 }
                 TextBox n = new TextBox();
-                n.Name = h.Name;
-                n.Text = h.Text;
-                fb.getFieldsList().Add(n);
+                ComboBox c = new ComboBox();
+                n.Text = h.Name.Text;
+                c.ItemsSource = h.Type.ItemsSource;
+                n.Name = c.Name = h.GUID;
+                c.Text = h.Type.Text;
+
+                fb.getFieldsList().Add(new UMLBlockLine() { GUID = h.GUID, Type = c, Name = n });
                 fb.imitateEvent(n, type);
                 fb.updateGUI();
             }
@@ -262,10 +295,10 @@ namespace UMLClassEditor.DrawElements.Arrows
                      ((UMLClassBox.NotifyType)type) == UMLClassBox.NotifyType.DeleteL)
             {
                 TextBox h = e as TextBox;
-                TextBox todelet = null;
+                UMLBlockLine todelet = null;
                 foreach (var textBox in fb.getFieldsList())
                 {
-                    if (textBox.Name == h.Name)
+                    if (textBox.GUID == h.Name)
                     {
                         todelet = textBox;
                         break;
@@ -282,7 +315,7 @@ namespace UMLClassEditor.DrawElements.Arrows
                 }
                 foreach (var textBox in fb.getMethodsList())
                 {
-                    if (textBox.Name == h.Name)
+                    if (textBox.GUID == h.Name)
                     {
                         todelet = textBox;
                         break;
@@ -300,22 +333,24 @@ namespace UMLClassEditor.DrawElements.Arrows
 
         private void fieldsSync()
         {
-            List<TextBox> fM = fb.getMethodsList();
-            List<TextBox> fF = fb.getFieldsList();
-            List<TextBox> sM = sb.getMethodsList();
-            List<TextBox> sF = sb.getFieldsList();
+            List<UMLBlockLine> fM = fb.getMethodsList();
+            List<UMLBlockLine> fF = fb.getFieldsList();
+            List<UMLBlockLine> sM = sb.getMethodsList();
+            List<UMLBlockLine> sF = sb.getFieldsList();
             if (mode == Tips.ImplementationArrow || mode == Tips.DerivArrow)
             {
                 foreach (var textBox in sM)
                 {
-                    if(textBox.Text.StartsWith("-"))
+                    if(textBox.Name.Text.StartsWith("-"))
                         continue;
                     bool founded = false;
                     foreach (var box in fM)
                     {
-                        if (box.Text.Contains(textBox.Text.Replace(textBox.Text.Substring(0, 1), "")))
+                        if (box.Name.Text.Contains(textBox.Name.Text.Replace(textBox.Name.Text.Substring(0, 1), "")))
                         {
-                            box.Name = textBox.Name;
+                            box.GUID = textBox.GUID;
+                            box.Name.Name = box.Type.Name = box.GUID; 
+                            box.Type.Text = textBox.Type.Text;
                             founded = true;
                             break;
                         }
@@ -325,21 +360,27 @@ namespace UMLClassEditor.DrawElements.Arrows
                     if (!founded)
                     {
                         TextBox h = new TextBox();
-                        h.Text = textBox.Text;
-                        h.Name = textBox.Name;
-                        fM.Add(h);
+                        ComboBox c = new ComboBox();
+                        h.Text = textBox.Name.Text;
+                        c.ItemsSource = textBox.Type.ItemsSource;
+                        c.Text = textBox.Type.Text;
+                        
+                        h.Name= c.Name = textBox.GUID;
+                        fM.Add(new UMLBlockLine(){GUID = textBox.GUID,Name = h,Type = c});
                     }
                 }
                 foreach (var textBox in sF)
                 {
-                    if (textBox.Text.StartsWith("-"))
+                    if (textBox.Name.Text.StartsWith("-"))
                         continue;
                     bool founded = false;
                     foreach (var box in fF)
                     {
-                        if (box.Text.Contains(textBox.Text.Replace(textBox.Text.Substring(0, 1), "")))
+                        if (box.Name.Text.Contains(textBox.Name.Text.Replace(textBox.Name.Text.Substring(0, 1), "")))
                         {
-                            box.Name = textBox.Name;
+                            box.GUID = textBox.GUID;
+                            box.Name.Name = box.Type.Name = box.GUID;
+                            box.Type.Text = textBox.Type.Text;
                             founded = true;
                             break;
                         }
@@ -349,9 +390,13 @@ namespace UMLClassEditor.DrawElements.Arrows
                     if (!founded)
                     {
                         TextBox h = new TextBox();
-                        h.Text = textBox.Text;
-                        h.Name = textBox.Name;
-                        fF.Add(h);
+                        ComboBox c = new ComboBox();
+                        h.Text = textBox.Name.Text;
+                        c.ItemsSource = textBox.Type.ItemsSource;
+                        c.Text = textBox.Type.Text;
+
+                        h.Name = c.Name = textBox.GUID;
+                        fF.Add(new UMLBlockLine() { GUID = textBox.GUID, Name = h, Type = c });
                     }
                 }
                 fb.updateGUI();

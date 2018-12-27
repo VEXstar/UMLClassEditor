@@ -22,34 +22,28 @@ namespace UMLClassEditor.DrawElements.Blocks
         }
         private BoxType  type;
         private TextBox className;
-        private List<TextBox> fields  = new List<TextBox>();
-        private List<TextBox> methods = new List<TextBox>();
-        
+        private List<UMLBlockLine> fields  = new List<UMLBlockLine>();
+        private List<UMLBlockLine> methods = new List<UMLBlockLine>();
+        private List<string> avableTypes;
+
+
         Point[] twoStartPoints = new Point[2];
         private Border element;
         private int standartHeight = 18;
         private string guid;
 
-        public UMLClassBox(string className,BoxType type,Point st)
+        public string getClassName()
+        {
+            return className.Text;
+        }
+        public UMLClassBox(string className,BoxType type,Point st,List<string> types)
         {
             guid = Guid.NewGuid().ToString();
             this.className = new TextBox();
             this.type = type;
             this.className.Text = className;
-            TextBox text = new TextBox();
-            if (type != BoxType.Interface)
-            {
-                text.TextChanged += SOnTextChanged;
-                text.Text = "#field";
-                text.Name = "f" + Guid.NewGuid().ToString().Replace("-", "");
-                fields.Add(text);
-            }
-            text = new TextBox();
-            text.TextChanged += SOnTextChanged;
-            text.Name = "f"+Guid.NewGuid().ToString().Replace("-","");
-            text.Text = "+void()";
-            methods.Add(text);
-
+            avableTypes = types;
+            types.Add(className);
             
             element = new Border();
             Canvas.SetTop(element, st.Y);
@@ -58,17 +52,19 @@ namespace UMLClassEditor.DrawElements.Blocks
 
         }
 
+        private EventBridge bridge;
         public void initMenu(EventBridge bridge)
         {
+            this.bridge = bridge;
             ContextMenu menu = new ContextMenu();
             MenuItem item = new MenuItem();
-            item.Header = "Создать потомка";
+            item.Header = "Создать производный класс";
             item.Name = "f" + guid.Replace("-","_");
             item.Click += bridge.ContextMenuAddChild;
             menu.Items.Add(item);
             item = new MenuItem();
             item.Name = "f" + guid.Replace("-", "_");
-            item.Header = "Добавить предка";
+            item.Header = "Создать базовый класс";
             item.Click += bridge.ContextMenuAddParent;
             menu.Items.Add(item);
             element.ContextMenu = menu;
@@ -146,6 +142,7 @@ namespace UMLClassEditor.DrawElements.Blocks
             className.BorderBrush = Brushes.Transparent;
             className.BorderThickness = new Thickness(0);
             className.Height = standartHeight;
+            className.TextChanged+= ClassNameOnTextChanged;
             className.Width = widthset;
             Canvas.SetTop(className,drop);
             canvas.Children.Add(className);
@@ -162,14 +159,26 @@ namespace UMLClassEditor.DrawElements.Blocks
 
                 foreach (var textBox in fields)
                 {
-                    textBox.Height = standartHeight;
-                    textBox.Width = widthset;
-                    textBox.KeyUp += TextBoxOnKeyUp;
-                    textBox.BorderBrush = Brushes.Transparent;
-                    textBox.BorderThickness = new Thickness(0);
-                    Canvas.SetTop(textBox, drop);
+
+                    textBox.Name.Height = standartHeight;
+                    textBox.Type.Width = 60;
+                    
+                    textBox.Name.Width = widthset - 60;
+                    textBox.Name.KeyUp += TextBoxOnKeyUp;
+                    textBox.Name.BorderBrush = Brushes.Transparent;
+                    textBox.Name.BorderThickness = new Thickness(0);
+                    textBox.Name.TextChanged += SOnTextChanged;
+
+                    textBox.Type.BorderBrush = Brushes.Transparent;
+                    textBox.Type.BorderThickness = new Thickness(0);
+                    textBox.Type.SelectionChanged += TypeOnSelectionChanged;
+                    
+                    Canvas.SetTop(textBox.Name, drop);
+                    Canvas.SetTop(textBox.Type, drop);
+                    Canvas.SetLeft(textBox.Name, 62);
                     drop += standartHeight;
-                    canvas.Children.Add(textBox);
+                    canvas.Children.Add(textBox.Name);
+                    canvas.Children.Add(textBox.Type);
                 }
                 Button newFieldsBtn = new Button();
 
@@ -193,14 +202,25 @@ namespace UMLClassEditor.DrawElements.Blocks
             drop += (int) s.Height;
             foreach (var textBox in methods)
             {
-                textBox.Height = standartHeight;
-                textBox.Width = widthset;
-                textBox.KeyUp += TextBoxOnKeyUp;
-                textBox.BorderBrush = Brushes.Transparent;
-                textBox.BorderThickness = new Thickness(0);
-                Canvas.SetTop(textBox, drop);
+
+                textBox.Name.Height = standartHeight;
+                textBox.Type.Width = 60;
+
+                textBox.Name.Width = widthset - 60;
+                textBox.Name.KeyUp += TextBoxOnKeyUp;
+                textBox.Name.BorderBrush = Brushes.Transparent;
+                textBox.Name.BorderThickness = new Thickness(0);
+                textBox.Name.TextChanged += SOnTextChanged;
+                textBox.Type.SelectionChanged += TypeOnSelectionChanged;
+                textBox.Type.BorderBrush = Brushes.Transparent;
+                textBox.Type.BorderThickness = new Thickness(0);
+
+                Canvas.SetTop(textBox.Name, drop);
+                Canvas.SetTop(textBox.Type, drop);
+                Canvas.SetLeft(textBox.Name, 62);
                 drop += standartHeight;
-                canvas.Children.Add(textBox);
+                canvas.Children.Add(textBox.Name);
+                canvas.Children.Add(textBox.Type);
             }
             Button newMethodButton = new Button();
             newMethodButton.Content = "+";
@@ -215,18 +235,45 @@ namespace UMLClassEditor.DrawElements.Blocks
             updateStartPoints();
         }
 
+        private void ClassNameOnTextChanged(object sender, TextChangedEventArgs e)
+        {
+         bridge.generateClassesList();
+        }
+
+        private void TypeOnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            NotifyAll(sender, NotifyType.Change);
+        }
+
         private void TextBoxOnKeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Delete&& sender is TextBox)
             {
-                if (methods.Contains(((TextBox) sender)))
+                bool compl = false;
+                foreach (var umlBlockLine in methods)
                 {
-                    methods.Remove((TextBox)sender);
+                    if (umlBlockLine.Name == (TextBox) sender)
+                    {
+                        methods.Remove(umlBlockLine);
+                        compl = true;
+                        break;
+                    }
                 }
-                else
+
+                if (!compl)
                 {
-                    fields.Remove((TextBox)sender);
+                    foreach (var umlBlockLine in fields)
+                    {
+                        if (umlBlockLine.Name == (TextBox)sender)
+                        {
+                            fields.Remove(umlBlockLine);
+                            compl = true;
+                            break;
+                        }
+                    }
                 }
+                if(!compl)
+                    return;
                 NotifyAll(sender,NotifyType.DeleteL);
                 generateBorder(element);
             }
@@ -255,9 +302,17 @@ namespace UMLClassEditor.DrawElements.Blocks
             TextBox text = new TextBox();
             text.Text = "+void"+methods.Count+"()";
             text.Name = "f" + Guid.NewGuid().ToString().Replace("-", "");
-            methods.Add(text);
+            UMLBlockLine block = new UMLBlockLine();
+            block.Name = text;
+            ComboBox box = new ComboBox();
+            box.Name = text.Name;
+            box.ItemsSource = avableTypes;
+            box.Text = "void";
+            block.Type  = box;
+            block.GUID = text.Name;
+            methods.Add(block);
             generateBorder(element);
-            NotifyAll(text, NotifyType.AddM);
+            NotifyAll(block, NotifyType.AddM);
         }
 
         private void NewFieldsBtnOnClick(object sender, RoutedEventArgs e)
@@ -265,10 +320,18 @@ namespace UMLClassEditor.DrawElements.Blocks
             TextBox text = new TextBox();
             text.Text = "#field"+fields.Count;
             text.Name = "f" + Guid.NewGuid().ToString().Replace("-", "");
-            fields.Add(text);
+            UMLBlockLine block = new UMLBlockLine();
+            block.Name = text;
+            ComboBox box = new ComboBox();
+            box.Name = text.Name;
+            box.ItemsSource = avableTypes;
+            box.Text = "int";
+            block.Type = box;
+            block.GUID = text.Name;
+            fields.Add(block);
             generateBorder(element);
             
-            NotifyAll(text, NotifyType.AddF);
+            NotifyAll(block, NotifyType.AddF);
         }
 
         public override void move(Point point, Canvas canvas)
@@ -316,11 +379,11 @@ namespace UMLClassEditor.DrawElements.Blocks
             observers.Clear();
         }
 
-        public List<TextBox> getMethodsList()
+        public List<UMLBlockLine> getMethodsList()
         {
             return methods;
         }
-        public List<TextBox> getFieldsList()
+        public List<UMLBlockLine> getFieldsList()
         {
             return fields;
         }
@@ -344,33 +407,47 @@ namespace UMLClassEditor.DrawElements.Blocks
             int i = 0;
             foreach (var textBox in fields)
             {
-                info.AddValue("field"+(i),textBox.Text,typeof(string));
-                info.AddValue("fieldG"+(i++),textBox.Name,typeof(string));
+                info.AddValue("fieldN"+(i),textBox.Name.Text,typeof(string));
+                info.AddValue("fieldT"+(i),textBox.Type.Text, typeof(string));
+                info.AddValue("fieldG"+(i++),textBox.GUID,typeof(string));
             }
              i = 0;
             foreach (var textBox in methods)
             {
-                info.AddValue("method" + (i), textBox.Text, typeof(string));
-                info.AddValue("methodG" + (i++), textBox.Name, typeof(string));
+                info.AddValue("methodN" + (i), textBox.Name.Text, typeof(string));
+                info.AddValue("methodT" + (i), textBox.Type.Text, typeof(string));
+                info.AddValue("methodG" + (i++), textBox.GUID, typeof(string));
             }
         }
+        private Dictionary<string,string> typesLoad = new Dictionary<string, string>();
         public UMLClassBox(SerializationInfo info, StreamingContext context)
         {
             for (int i = 0; i < (int) info.GetValue("fieldsCount", typeof(int)); i++)
             {
                 TextBox s = new TextBox();
-                s.Text = (string)info.GetValue("field" + i,typeof(string));
+                ComboBox box = new ComboBox();
+              //  box.ItemsSource = avableTypes;
+                s.Text = (string)info.GetValue("fieldN" + i,typeof(string));
+                string typeB = (string)info.GetValue("fieldT" + i,typeof(string));
                 s.Name = (string)info.GetValue("fieldG" + i, typeof(string));
+                box.Name = s.Name;
+                typesLoad.Add(box.Name,typeB);
                 s.TextChanged += SOnTextChanged;
-                fields.Add(s);
+                fields.Add(new UMLBlockLine(){GUID = s.Name,Name =s ,Type = box});
             }
             for (int i = 0; i < (int)info.GetValue("methodCount", typeof(int)); i++)
             {
                 TextBox s = new TextBox();
-                s.Text = (string)info.GetValue("method" + i, typeof(string));
+                ComboBox box = new ComboBox();
+               // box.ItemsSource = avableTypes;
+                s.Text = (string)info.GetValue("methodN" + i, typeof(string));
+                string typeB = (string)info.GetValue("methodT" + i, typeof(string));
+
                 s.Name = (string)info.GetValue("methodG" + i, typeof(string));
+                box.Name = s.Name;
+                typesLoad.Add(box.Name, typeB);
                 s.TextChanged += SOnTextChanged;
-                methods.Add(s);
+                methods.Add(new UMLBlockLine() { GUID = s.Name, Name = s, Type = box });
             }
             type =(BoxType)info.GetValue("BoxType",typeof(BoxType));
             className = new TextBox();
@@ -385,6 +462,22 @@ namespace UMLClassEditor.DrawElements.Blocks
             updateStartPoints();
         }
 
+        public void beforeLoadSets(List<string> calsses)
+        {
+            List<UMLBlockLine> line = new List<UMLBlockLine>(methods);
+            line.AddRange(fields);
+            avableTypes = calsses;
+            foreach (var umlBlockLine in line)
+            {
+                if (typesLoad.ContainsKey(umlBlockLine.GUID))
+                {
+                    umlBlockLine.Type.ItemsSource = avableTypes;
+                    umlBlockLine.Type.Text = typesLoad[umlBlockLine.GUID];
+                }
+            }
+
+        }
+
         private void SOnTextChanged(object sender, TextChangedEventArgs e)
         {
            NotifyAll(sender,NotifyType.Change);
@@ -394,5 +487,12 @@ namespace UMLClassEditor.DrawElements.Blocks
         {
             NotifyAll(sender,type);
         }
+    }
+
+    public class UMLBlockLine
+    {
+        public TextBox Name { get; set; }
+        public ComboBox Type { get; set; }
+        public string GUID { get; set; }
     }
 }

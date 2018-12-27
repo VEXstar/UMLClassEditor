@@ -24,6 +24,7 @@ namespace UMLClassEditor {
         }
 
         private State picked;
+        private List<string> classes = new List<string>();
         private  Rectangle rectangle = new Rectangle();
         Storage<UMLElement> elements = new Storage<UMLElement>();
 
@@ -36,8 +37,28 @@ namespace UMLClassEditor {
             rectangle.Stroke = Brushes.RoyalBlue;
             rectangle.Fill = Brushes.Transparent;
             rectangle.Height = 134;
+            generateClassesList();
 
+        }
 
+        public void generateClassesList()
+        {
+            classes.Clear();
+            classes.Add("int");
+            classes.Add("double");
+            classes.Add("long");
+            classes.Add("string");
+            classes.Add("Point");
+            classes.Add("object");
+            classes.Add("void");
+            foreach (var umlElement in elements)
+            {
+                if (umlElement is UMLClassBox s)
+                {
+                    classes.Add(s.getClassName());
+                }
+            }
+            
         }
 
         private void OnKeyUp(object sender, KeyEventArgs e)
@@ -138,7 +159,7 @@ namespace UMLClassEditor {
             {
                drawCanvas.Children.Remove(rectangle);
                now = new Point(now.X - rectangle.Width / 2, now.Y - rectangle.Height / 2);
-               UMLClassBox box = new UMLClassBox("SomeClass",(picked==State.ClassBox)? UMLClassBox.BoxType.Class: UMLClassBox.BoxType.Interface,now);
+               UMLClassBox box = new UMLClassBox("SomeClass",(picked==State.ClassBox)? UMLClassBox.BoxType.Class: UMLClassBox.BoxType.Interface,now, classes);
                box.initMenu(this);
                box.draw(drawCanvas);
                 elements.Add(box);
@@ -301,13 +322,15 @@ namespace UMLClassEditor {
             {
                 elements.Clear(drawCanvas);
                 Stream s = File.Open(dialog.FileName, FileMode.Open);
-                elements = new Storage<UMLElement>(s,this);
+                elements = new Storage<UMLElement>(s,this,classes);
                 s.Close();
                 foreach (var umlElement in elements)
                 {
                     umlElement.draw(drawCanvas);
                 }
+                generateClassesList();
             }
+
         }
 
         private void Save_OnClick(object sender, RoutedEventArgs e)
@@ -351,7 +374,7 @@ namespace UMLClassEditor {
                 {
                     UMLClassBox f = umlElement as UMLClassBox;
                     Point s = f.GetCenterPoint();
-                    UMLClassBox n = new UMLClassBox("NewChildClass",UMLClassBox.BoxType.Class,new Point(s.X+160, s.Y));
+                    UMLClassBox n = new UMLClassBox("NewChildClass",UMLClassBox.BoxType.Class,new Point(s.X+160, s.Y), classes);
                     n.draw(drawCanvas);
                     n.initMenu(this);
                     DependencyArrow dependency = new DependencyArrow(n,f,(f.getType() == UMLClassBox.BoxType.Class)? DependencyArrow.Tips.DerivArrow: DependencyArrow.Tips.ImplementationArrow);
@@ -372,7 +395,7 @@ namespace UMLClassEditor {
             UMLClassBox sblock = null;
             foreach (var val in elements)
             {
-                if (val is DependencyArrow&&(val as DependencyArrow).getFGUID() == guid)
+                if (val is DependencyArrow&&(val as DependencyArrow).getFGUID() == guid&&((val as DependencyArrow).GetTip() == DependencyArrow.Tips.ImplementationArrow || (val as DependencyArrow).GetTip() == DependencyArrow.Tips.DerivArrow))
                 {
                     link = val as DependencyArrow;
                 }
@@ -384,15 +407,39 @@ namespace UMLClassEditor {
                     break;
             }
 
-            foreach (var umlElement in elements)
+            if (link != null)
             {
-                if (umlElement is UMLClassBox && (umlElement as UMLClassBox).getGuid() == link.getSGUID())
+                foreach (var umlElement in elements)
                 {
-                    sblock = umlElement as UMLClassBox;
-                    break;
+                    if (umlElement is UMLClassBox && (umlElement as UMLClassBox).getGuid() == link.getSGUID())
+                    {
+                        sblock = umlElement as UMLClassBox;
+                        break;
+                    }
                 }
+                elements.Remove(link);
+                link.removeGraphicFromCanvas(drawCanvas);
+            }
+            ParentDependencyWindow dependencyWindow = new ParentDependencyWindow(fblock.getFieldsList(),fblock.getMethodsList());
+            if(dependencyWindow.ShowDialog() != true)
+                return;
+            UMLClassBox newbox = dependencyWindow.generateParent(fblock.GetCenterPoint(), classes);
+            fblock.move(new Point(160,0),drawCanvas);
+            DependencyArrow arrow = new DependencyArrow(fblock,newbox,DependencyArrow.Tips.DerivArrow);
+            arrow.draw(drawCanvas);
+            newbox.draw(drawCanvas);
+            newbox.beforeLoadSets(classes);
+            newbox.initMenu(this);
+            elements.Add(arrow);
+            elements.Add(newbox);
+            if (link != null)
+            {
+                DependencyArrow sArrow = new DependencyArrow(newbox,sblock,link.GetTip());
+                sArrow.draw(drawCanvas);
+                elements.Add(sArrow);
             }
             //TODO: Разорвать связь между предком и нашим блоком, вывести окно с выбором нужных полей (два листа с множественным выбором или чекбокс лист хз) и создать новые связи со свдигом
+            //TODO: удалять отдельно связи
         }
     }
 }

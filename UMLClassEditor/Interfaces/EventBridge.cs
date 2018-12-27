@@ -6,6 +6,6 @@ namespace UMLClassEditor.Interfaces
     {
          void ContextMenuAddChild(object sender, RoutedEventArgs e);
          void ContextMenuAddParent(object sender, RoutedEventArgs e);
-    
+        void  generateClassesList();
     }
 }

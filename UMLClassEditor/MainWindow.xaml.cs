@@ -414,12 +414,15 @@ namespace UMLClassEditor {
                         break;
                     }
                 }
-                elements.Remove(link);
-                link.removeGraphicFromCanvas(drawCanvas);
             }
             ParentDependencyWindow dependencyWindow = new ParentDependencyWindow(fblock.getFieldsList(),fblock.getMethodsList());
             if(dependencyWindow.ShowDialog() != true)
                 return;
+            if (link != null)
+            {
+                elements.Remove(link);
+                link.removeGraphicFromCanvas(drawCanvas);
+            }
             UMLClassBox newbox = dependencyWindow.generateParent(fblock.GetCenterPoint(), classes);
             fblock.move(new Point(160,0),drawCanvas);
             DependencyArrow arrow = new DependencyArrow(fblock,newbox,DependencyArrow.Tips.DerivArrow);
